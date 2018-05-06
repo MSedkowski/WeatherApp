@@ -12,13 +12,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.astrocalculator.AstroCalculator;
+import com.astrocalculator.AstroDateTime;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 
 public class WeatherActivity extends AppCompatActivity implements LocationListener {
@@ -26,13 +31,18 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
     private static int REQUEST_LOCATION = 1;
     private ImageView weatherIcon;
     private TextView date;
-    private TextView time;
+    private TextClock time;
     private TextView longitude;
     private TextView latitude;
+    private TextView sunrise;
+    private TextView dawn;
+    private TextView twilightMorning;
+    private TextView twilightEvening;
     protected LocationManager locationManager;
     protected LocationListener locationListener;
     protected Context context;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +52,45 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         time = findViewById(R.id.timeValue);
         longitude = findViewById(R.id.longitudeValue);
         latitude = findViewById(R.id.latitudeValue);
+        sunrise = findViewById(R.id.sunriseValue);
+        dawn = findViewById(R.id.dawnValue);
+        twilightMorning = findViewById(R.id.twilightMorningValue);
+        twilightEvening = findViewById(R.id.twilightEveningValue);
         setTime();
+        setLocation();
+        setData();
+    }
+
+    private void setData() {
+        long deviceDate = System.currentTimeMillis();
+        int year = Integer.parseInt(new SimpleDateFormat("YYYY", Locale.ENGLISH).format(deviceDate));
+        int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.ENGLISH).format(deviceDate));
+        int day = Integer.parseInt(new SimpleDateFormat("dd", Locale.ENGLISH).format(deviceDate));
+        int hour = Integer.parseInt(new SimpleDateFormat("hh", Locale.GERMANY).format(deviceDate));
+        int minute = Integer.parseInt(new SimpleDateFormat("mm", Locale.GERMANY).format(deviceDate));
+        int second = Integer.parseInt(new SimpleDateFormat("ss", Locale.GERMANY).format(deviceDate));
+        int timeZoneOffset = 1;
+        boolean dayLightSaving = true;
+        AstroDateTime today = new AstroDateTime(year, month, day, hour, minute, second, timeZoneOffset, dayLightSaving);
+        AstroCalculator.Location astroLocation = new AstroCalculator.Location(Double.parseDouble(latitude.getText().toString()),
+                                                                              Double.parseDouble(longitude.getText().toString()));
+        AstroCalculator astroCalculator = new AstroCalculator(today, astroLocation);
+        AstroDateTime todaySunrise = astroCalculator.getSunInfo().getSunrise();
+        AstroDateTime todayDawn = astroCalculator.getSunInfo().getSunset();
+        AstroDateTime todayTwilingMorning = astroCalculator.getSunInfo().getTwilightMorning();
+        AstroDateTime todayTwilingEvening = astroCalculator.getSunInfo().getTwilightEvening();
+        sunrise.setText("" + todaySunrise.getHour() + ":" + todaySunrise.getMinute() + ":" + todaySunrise.getSecond());
+        dawn.setText("" + todayDawn.getHour() + ":" + todayDawn.getMinute() + ":" + todayDawn.getSecond());
+        int differenceMorning = (todaySunrise.getHour()*60+todaySunrise.getMinute())-
+                                (todayTwilingMorning.getHour()*60+todayTwilingMorning.getMinute());
+        int differenceEvening = (todayTwilingEvening.getHour()*60+todayTwilingEvening.getMinute())-
+                                (todayDawn.getHour()*60+todayDawn.getMinute());
+        twilightMorning.setText("" + differenceMorning + " minut");
+        twilightEvening.setText("" + differenceEvening + " minut");
+
+    }
+
+    private void setLocation() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED
@@ -62,22 +110,48 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, (LocationListener) this);
         }
     }
-
     private void setTime() {
-        Date deviceDate = Calendar.getInstance().getTime();
-        if (deviceDate.getHours() > 20 || deviceDate.getHours() < 6) {
-            weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.moon));
-        } else {
-            weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.sun));
-        }
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy");
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:SS");
-        String currentDate = dateFormatter.format(deviceDate);
-        String currentTime = timeFormatter.format(deviceDate);
-        date.setText(currentDate);
-        time.setText(currentTime);
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                long deviceDate = System.currentTimeMillis();
+                SimpleDateFormat hourFormater = new SimpleDateFormat("HH");
+                String hours = hourFormater.format(deviceDate);
+                if (Integer.parseInt(hours) > 20 || Integer.parseInt(hours) < 6) {
+                    weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.moon));
+                } else {
+                    weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.sun));
+                }
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                String currentDate = dateFormatter.format(deviceDate);
+                date.setText(currentDate);
+                try {
+                    while(!isInterrupted()) {
+                        Thread.sleep(60000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                long deviceDate = System.currentTimeMillis();
+                                SimpleDateFormat hourFormater = new SimpleDateFormat("HH");
+                                String hours = hourFormater.format(deviceDate);
+                                if (Integer.parseInt(hours) > 20 || Integer.parseInt(hours) < 6) {
+                                    weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.moon));
+                                } else {
+                                    weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.sun));
+                                }
+                                SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                                String currentDate = dateFormatter.format(deviceDate);
+                                date.setText(currentDate);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {}
+            }
+        };
+        t.start();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onLocationChanged(Location location) {
         longitude.setText("" + location.getLongitude());

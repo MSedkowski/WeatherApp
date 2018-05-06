@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+    <string name="title_activity_current_location_info">CurrentLocationInfo</string>
+    <string name="action_settings">Settings</string>
 </resources>
