@@ -33,17 +33,25 @@ import java.util.Locale;
 public class WeatherActivity extends AppCompatActivity implements LocationListener{
 
     private static int REQUEST_LOCATION = 1;
-    private TextView sunrise;
-    private TextView dawn;
-    private TextView twilightMorning;
-    private TextView twilightEvening;
     protected LocationManager locationManager;
     protected LocationListener locationListener;
     protected Context context;
 
     public static String todayDate;
+
     public static double longitude;
     public static double latitude;
+
+    public static String sunrise;
+    public static String sunset;
+    public static String twilightMorning;
+    public static String twilightEvening;
+
+    public static String moonrise;
+    public static String moonset;
+    public static String nextFullMoon;
+    public static String nextNewMoon;
+
     private ViewPager viewPager;
 
     @SuppressLint("SetTextI18n")
@@ -51,11 +59,6 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-
-        sunrise = findViewById(R.id.sunriseValue);
-        dawn = findViewById(R.id.dawnValue);
-        twilightMorning = findViewById(R.id.twilightMorningValue);
-        twilightEvening = findViewById(R.id.twilightEveningValue);
 
         setTime();
         setLocation();
@@ -72,24 +75,42 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
     private void setMoonInfo(AstroCalculator today) {
         AstroDateTime todayMoonRise = today.getMoonInfo().getMoonrise();
         AstroDateTime todayMoonSet = today.getMoonInfo().getMoonset();
-        AstroDateTime nextFullMoon = today.getMoonInfo().getNextFullMoon();
-        AstroDateTime nextNewMoon = today.getMoonInfo().getNextNewMoon();
+        AstroDateTime nextFullMoonDate = today.getMoonInfo().getNextFullMoon();
+        AstroDateTime nextNewMoonDate = today.getMoonInfo().getNextNewMoon();
         DecimalFormat format = new DecimalFormat();
         format.setMinimumIntegerDigits(2);
 
-        StringBuilder moonRise = new StringBuilder();
-        moonRise.append(format.format(todayMoonRise.getHour()));
-        moonRise.append(":");
-        moonRise.append(format.format(todayMoonRise.getMinute()));
-        moonRise.append(":");
-        moonRise.append(format.format(todayMoonRise.getSecond()));
+        StringBuilder moonRiseText = new StringBuilder();
+        moonRiseText.append(format.format(todayMoonRise.getHour()));
+        moonRiseText.append(":");
+        moonRiseText.append(format.format(todayMoonRise.getMinute()));
+        moonRiseText.append(":");
+        moonRiseText.append(format.format(todayMoonRise.getSecond()));
 
-        StringBuilder moonSet = new StringBuilder();
-        moonSet.append(format.format(todayMoonSet.getHour()));
-        moonSet.append(":");
-        moonSet.append(format.format(todayMoonSet.getMinute()));
-        moonSet.append(":");
-        moonSet.append(format.format(todayMoonSet.getSecond()));
+        StringBuilder moonSetText = new StringBuilder();
+        moonSetText.append(format.format(todayMoonSet.getHour()));
+        moonSetText.append(":");
+        moonSetText.append(format.format(todayMoonSet.getMinute()));
+        moonSetText.append(":");
+        moonSetText.append(format.format(todayMoonSet.getSecond()));
+
+        moonrise = moonRiseText.toString();
+        moonset = moonSetText.toString();
+
+        StringBuilder nextFullMoonDateText = new StringBuilder();
+        nextFullMoonDateText.append(format.format(nextFullMoonDate.getDay()));
+        nextFullMoonDateText.append("/");
+        nextFullMoonDateText.append(format.format(nextFullMoonDate.getMonth()));
+        nextFullMoonDateText.append("\t");
+
+        StringBuilder nextNewMoonDateText = new StringBuilder();
+        nextNewMoonDateText.append(format.format(nextNewMoonDate.getDay()));
+        nextNewMoonDateText.append("/");
+        nextNewMoonDateText.append(format.format(nextNewMoonDate.getMonth()));
+        nextNewMoonDateText.append("\t");
+
+        nextFullMoon = nextFullMoonDateText.toString();
+        nextNewMoon = nextNewMoonDateText.toString();
     }
 
     private AstroCalculator getTodayInfo(){
@@ -103,9 +124,7 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         int timeZoneOffset = 1;
         boolean dayLightSaving = true;
         AstroDateTime today = new AstroDateTime(year, month, day, hour, minute, second, timeZoneOffset, dayLightSaving);
-        AstroCalculator.Location astroLocation = new AstroCalculator.Location(50.3, 55.4);
-//        AstroCalculator.Location astroLocation = new AstroCalculator.Location(Double.parseDouble(latitude.getText().toString()),
-//                Double.parseDouble(longitude.getText().toString()));
+        AstroCalculator.Location astroLocation = new AstroCalculator.Location(latitude, longitude);
         AstroCalculator todayInfo = new AstroCalculator(today, astroLocation);
         return todayInfo;
     }
@@ -136,16 +155,24 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         dawnText.append("\n Azymut: ");
         dawnText.append(String.format("%.2f", today.getSunInfo().getAzimuthSet()));
 
-        sunrise.setText(sunriseText.toString());
-        dawn.setText(dawnText.toString());
+        sunrise = sunriseText.toString();
+        sunset = dawnText.toString();
 
         int differenceMorning = (todaySunrise.getHour()*60+todaySunrise.getMinute())-
                                 (todayTwilingMorning.getHour()*60+todayTwilingMorning.getMinute());
         int differenceEvening = (todayTwilingEvening.getHour()*60+todayTwilingEvening.getMinute())-
                                 (todayDawn.getHour()*60+todayDawn.getMinute());
 
-        twilightMorning.setText("" + differenceMorning + " minut");
-        twilightEvening.setText("" + differenceEvening + " minut");
+        StringBuilder twilightMorningText = new StringBuilder();
+        twilightMorningText.append(differenceMorning);
+        twilightMorningText.append(" minut");
+
+        StringBuilder twilightEveningText = new StringBuilder();
+        twilightEveningText.append(differenceEvening);
+        twilightEveningText.append(" minut");
+
+        twilightMorning = twilightMorningText.toString();
+        twilightEvening = twilightEveningText.toString();
 
     }
 

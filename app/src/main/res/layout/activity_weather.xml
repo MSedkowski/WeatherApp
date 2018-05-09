@@ -9,19 +9,8 @@
     <android.support.v4.view.ViewPager
         android:id="@+id/sunMoonPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <include
-            android:id="@+id/fragmentSun"
-            layout="@layout/fragment_sun"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <include
-            android:id="@+id/fragmentMoon"
-            layout="@layout/fragment_moon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="15dp">
 
     </android.support.v4.view.ViewPager>
 </RelativeLayout>
