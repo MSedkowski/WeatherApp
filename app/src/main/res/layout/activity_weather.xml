@@ -1,229 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WeatherActivity"
-    tools:ignore="RtlCompat">
+    tools:context=".WeatherActivity">
 
-    <LinearLayout
-        android:id="@+id/mainLayout"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/sunMoonPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/currentWeatherIcon"
+        <include
+            android:id="@+id/fragmentSun"
+            layout="@layout/fragment_sun"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            app:srcCompat="@drawable/sun" />
+            android:layout_height="match_parent" />
 
-        <LinearLayout
-            android:id="@+id/firstRow"
+        <include
+            android:id="@+id/fragmentMoon"
+            layout="@layout/fragment_moon"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:orientation="horizontal">
+            android:layout_height="match_parent" />
 
-            <LinearLayout
-                android:id="@+id/leftSideOfFirstRow"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/latitude"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Szerokość geograficzna"
-                    android:textAlignment="textEnd" />
-
-                <TextView
-                    android:id="@+id/longitude"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Długość geograficzna"
-                    android:textAlignment="textEnd" />
-
-                <TextView
-                    android:id="@+id/date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Data"
-                    android:textAlignment="textEnd" />
-
-                <TextView
-                    android:id="@+id/time"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Czas"
-                    android:textAlignment="textEnd" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/rightSideOfFirstRow"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/latitudeValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical" />
-
-                <TextView
-                    android:id="@+id/longitudeValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical" />
-
-                <TextView
-                    android:id="@+id/dateValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical" />
-
-                <TextClock
-                    android:id="@+id/timeValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:format24Hour="k:mm:ss"
-                    android:gravity="center_vertical" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/secondRow"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:id="@+id/leftSide"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/sunrise"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="right|center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Wschód słońca: " />
-
-                <TextView
-                    android:id="@+id/dawn"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="right|center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Zachód słońca: " />
-
-                <TextView
-                    android:id="@+id/twilightEvening"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="right|center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Zmierzch cywilny: " />
-
-                <TextView
-                    android:id="@+id/twilightMorning"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="right|center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Świt cywilny: " />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/rightSide"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/sunriseValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical" />
-
-                <TextView
-                    android:id="@+id/dawnValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical" />
-
-                <TextView
-                    android:id="@+id/twilightEveningValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical" />
-
-                <TextView
-                    android:id="@+id/twilightMorningValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/buttonRow"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/changeData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Zmień położenie" />
-
-            <Button
-                android:id="@+id/changeDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Zmień datę" />
-        </LinearLayout>
-    </LinearLayout>
-
-</android.support.constraint.ConstraintLayout>
+    </android.support.v4.view.ViewPager>
+</RelativeLayout>
