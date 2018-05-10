@@ -35,7 +35,11 @@ public class CustomPagerAdapter extends FragmentPagerAdapter {
     @Override
     public void notifyDataSetChanged() {
         sunInfoFragment.updateLocation();
+        sunInfoFragment.updateDate();
+        sunInfoFragment.updateSunInfo();
         moonInfoFragment.updateLocation();
+        moonInfoFragment.updateDate();
+        moonInfoFragment.updateMoonInfo();
     }
 
 }

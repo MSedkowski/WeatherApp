@@ -43,4 +43,15 @@ public class SunInfoFragment extends Fragment {
         longitude.setText("" + WeatherActivity.longitude);
         latitude.setText("" + WeatherActivity.latitude);
     }
+
+    public void updateDate() {
+        todayData.setText(WeatherActivity.todayDate);
+    }
+
+    public void updateSunInfo() {
+        sunrise.setText(WeatherActivity.sunrise);
+        sunset.setText(WeatherActivity.sunset);
+        twilightMorning.setText(WeatherActivity.twilightMorning);
+        twilightEvening.setText(WeatherActivity.twilightEvening);
+    }
 }

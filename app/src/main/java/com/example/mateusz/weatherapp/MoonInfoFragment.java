@@ -45,4 +45,14 @@ public class MoonInfoFragment extends Fragment {
         latitude.setText("" + WeatherActivity.latitude);
     }
 
+    public void updateDate() {
+        todayData.setText(WeatherActivity.todayDate);
+    }
+
+    public void updateMoonInfo(){
+        moonrise.setText(WeatherActivity.moonrise);
+        moonset.setText(WeatherActivity.moonset);
+        nextFullMoon.setText(WeatherActivity.nextFullMoon);
+        nextNewMoon.setText(WeatherActivity.nextNewMoon);
+    }
 }
