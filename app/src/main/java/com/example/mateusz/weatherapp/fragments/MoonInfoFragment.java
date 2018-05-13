@@ -3,7 +3,6 @@ package com.example.mateusz.weatherapp.fragments;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +14,7 @@ import com.example.mateusz.weatherapp.activities.WeatherActivity;
 
 import java.text.DecimalFormat;
 
-public class MoonInfoFragment extends Fragment {
-
-    private TextView todayDate;
-    private TextView longitude;
-    private TextView latitude;
+public class MoonInfoFragment extends InfoFragment {
 
     private TextView moonrise;
     private TextView moonset;
@@ -33,16 +28,15 @@ public class MoonInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_moon, container, false);
-        todayDate = rootView.findViewById(R.id.dateValue);
-        longitude = rootView.findViewById(R.id.longitudeValue);
-        latitude = rootView.findViewById(R.id.latitudeValue);
+        super.setLayout(R.layout.fragment_moon);
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
         moonrise = rootView.findViewById(R.id.moonriseValue);
         moonset = rootView.findViewById(R.id.moonsetValue);
         nextFullMoon = rootView.findViewById(R.id.nextFullMoonValue);
         nextNewMoon = rootView.findViewById(R.id.nextNewMoonValue);
         moonAge = rootView.findViewById(R.id.moonAgeValue);
         moonPhase = rootView.findViewById(R.id.moonPhaseValue);
+
 
         Runnable runnable = new Runnable() {
 
@@ -61,9 +55,7 @@ public class MoonInfoFragment extends Fragment {
     public void update() {
         DecimalFormat format = new DecimalFormat();
         format.setMaximumFractionDigits(2);
-        longitude.setText(String.valueOf(WeatherActivity.longitude));
-        latitude.setText(String.valueOf(WeatherActivity.latitude));
-        todayDate.setText(WeatherActivity.todayDate);
+        super.update();
         moonrise.setText(WeatherActivity.moonrise);
         moonset.setText(WeatherActivity.moonset);
         nextFullMoon.setText(WeatherActivity.nextFullMoon);
@@ -71,8 +63,9 @@ public class MoonInfoFragment extends Fragment {
         moonAge.setText(format.format(WeatherActivity.moonAge));
         StringBuilder moonPhaseText = new StringBuilder();
         moonPhaseText.append(format.format(WeatherActivity.moonPhase))
-                     .append("%");
+                .append("%");
         moonPhase.setText(moonPhaseText);
-        if(getContext() != null) Toast.makeText(getContext(), "Zaktualizowano", Toast.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), "Zaktualizowano", Toast.LENGTH_SHORT).show();
     }
 }

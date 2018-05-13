@@ -3,7 +3,6 @@ package com.example.mateusz.weatherapp.fragments;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +12,8 @@ import android.widget.Toast;
 import com.example.mateusz.weatherapp.R;
 import com.example.mateusz.weatherapp.activities.WeatherActivity;
 
-public class SunInfoFragment extends Fragment {
+public class SunInfoFragment extends InfoFragment {
 
-    private TextView todayDate;
-    private TextView longitude;
-    private TextView latitude;
     private TextView sunrise;
     private TextView sunset;
     private TextView twilightMorning;
@@ -27,18 +23,13 @@ public class SunInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_sun, container, false);
-        todayDate = rootView.findViewById(R.id.dateValue);
-        longitude = rootView.findViewById(R.id.longitudeValue);
-        latitude = rootView.findViewById(R.id.latitudeValue);
+        super.setLayout(R.layout.fragment_sun);
+        final View rootView = super.onCreateView(inflater, container, savedInstanceState);
         sunrise = rootView.findViewById(R.id.sunriseValue);
         sunset = rootView.findViewById(R.id.dawnValue);
         twilightMorning = rootView.findViewById(R.id.twilightMorningValue);
         twilightEvening = rootView.findViewById(R.id.twilightEveningValue);
 
-        todayDate.setText(WeatherActivity.todayDate);
-        longitude.setText(String.valueOf(WeatherActivity.longitude));
-        latitude.setText(String.valueOf(WeatherActivity.latitude));
         sunrise.setText(WeatherActivity.sunrise);
         sunset.setText(WeatherActivity.sunset);
         twilightMorning.setText(WeatherActivity.twilightMorning);
@@ -59,9 +50,7 @@ public class SunInfoFragment extends Fragment {
     }
 
     public void update() {
-        longitude.setText(String.valueOf(WeatherActivity.longitude));
-        latitude.setText(String.valueOf(WeatherActivity.latitude));
-        todayDate.setText(WeatherActivity.todayDate);
+        super.update();
         sunrise.setText(WeatherActivity.sunrise);
         sunset.setText(WeatherActivity.sunset);
         twilightMorning.setText(WeatherActivity.twilightMorning);

@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -341,7 +340,7 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         savedInstanceState.putString("twilightEvening", twilightEvening);
         savedInstanceState.putString("moonrise", moonrise);
         savedInstanceState.putString("moonset", moonset);
-        savedInstanceState.putString("nexFullMoon", nextFullMoon);
+        savedInstanceState.putString("nextFullMoon", nextFullMoon);
         savedInstanceState.putString("nextNewMoon", nextNewMoon);
         savedInstanceState.putDouble("longitude", longitude);
         savedInstanceState.putDouble("latitude", latitude);

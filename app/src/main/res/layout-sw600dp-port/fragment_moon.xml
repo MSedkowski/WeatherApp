@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:clipToPadding="false"
     android:fillViewport="true"
-    tools:context=".fragments.MoonInfoFragment"
+    tools:context=".fragments.InfoFragment"
     tools:ignore="NestedWeights, RtlSymmetry">
 
     <LinearLayout
