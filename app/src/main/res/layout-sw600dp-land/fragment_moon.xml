@@ -163,6 +163,23 @@
                     android:gravity="end|center_vertical"
                     android:paddingEnd="5dp"
                     android:text="@string/next_new_moon" />
+                <TextView
+                    android:id="@+id/moonAge"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
+                    android:paddingEnd="5dp"
+                    android:text="@string/moon_age" />
+
+                <TextView
+                    android:id="@+id/moonPhase"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
+                    android:paddingEnd="5dp"
+                    android:text="@string/moon_phase" />
             </LinearLayout>
 
             <LinearLayout
@@ -195,6 +212,19 @@
 
                 <TextView
                     android:id="@+id/nextNewMoonValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" />
+                <TextView
+                    android:id="@+id/moonAgeValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" />
+
+                <TextView
+                    android:id="@+id/moonPhaseValue"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"

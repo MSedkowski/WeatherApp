@@ -28,5 +28,7 @@
     <string name="version_number">1.0.0</string>
     <string name="author" tools:ignore="Typos">Autor: </string>
     <string name="author_name">Mateusz Sędkowski</string>
+    <string name="moon_age">Dzień miesiąca synodycznego: </string>
+    <string name="moon_phase">Faza księżyca: </string>
 
 </resources>

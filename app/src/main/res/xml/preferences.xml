@@ -20,14 +20,20 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="Pozorowana szerokość geograficzna" />
-    <EditTextPreference
-        android:defaultValue="Default value"
-        android:inputType="number"
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/list_update_intervals"
+        android:entryValues="@array/list_update_intervals_values"
         android:key="refreshing_time"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:summary="Podaj czas odświeżania danych w minutach."
         android:title="Czas odświeżania" />
+    <!--<EditTextPreference-->
+        <!--android:defaultValue="Default value"-->
+        <!--android:inputType="number"-->
+        <!--android:key="refreshing_time"-->
+        <!--android:selectAllOnFocus="true"-->
+        <!--android:singleLine="true"-->
+        <!--android:summary="Podaj czas odświeżania danych w minutach."-->
+        <!--android:title="Czas odświeżania" />-->
     <EditTextPreference
         android:defaultValue="Default value"
         android:inputType="date"

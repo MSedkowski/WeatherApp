@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -30,6 +31,7 @@ import com.example.mateusz.weatherapp.settings.SettingsActivity;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -53,9 +55,11 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
     public static String moonset;
     public static String nextFullMoon;
     public static String nextNewMoon;
+    public static double moonPhase;
+    public static double moonAge;
 
     private boolean isGPSLocationEnable = true;
-    public static int refreshingTime = 1;
+    public static int refreshingTime = 15;
     private SharedPreferences sharedPrefs;
     private ViewPager viewPager;
 
@@ -150,6 +154,9 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         AstroDateTime todayMoonSet = today.getMoonInfo().getMoonset();
         AstroDateTime nextFullMoonDate = today.getMoonInfo().getNextFullMoon();
         AstroDateTime nextNewMoonDate = today.getMoonInfo().getNextNewMoon();
+        moonPhase = today.getMoonInfo().getIllumination() * 100;
+        moonAge = today.getMoonInfo().getAge();
+
         DecimalFormat format = new DecimalFormat();
         format.setMinimumIntegerDigits(2);
 
@@ -187,15 +194,16 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
     }
 
     private AstroCalculator getTodayInfo() {
-        long deviceDate = System.currentTimeMillis();
+        long deviceDate = Calendar.getInstance().getTime().getTime();
         int year = Integer.parseInt(new SimpleDateFormat("YYYY", Locale.ENGLISH).format(deviceDate));
         int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.ENGLISH).format(deviceDate));
         int day = Integer.parseInt(new SimpleDateFormat("dd", Locale.ENGLISH).format(deviceDate));
         int hour = Integer.parseInt(new SimpleDateFormat("hh", Locale.GERMANY).format(deviceDate));
         int minute = Integer.parseInt(new SimpleDateFormat("mm", Locale.GERMANY).format(deviceDate));
         int second = Integer.parseInt(new SimpleDateFormat("ss", Locale.GERMANY).format(deviceDate));
-        int timeZoneOffset = 1;
-        AstroDateTime today = new AstroDateTime(year, month, day, hour, minute, second, timeZoneOffset, true);
+        int timeZoneOffset = Calendar.getInstance().getTimeZone().getRawOffset() / 3600000;
+        int daySaveTime = Calendar.getInstance().getTimeZone().getDSTSavings();
+        AstroDateTime today = new AstroDateTime(year, month, day, hour, minute, second, timeZoneOffset, daySaveTime != 0);
         AstroCalculator.Location astroLocation = new AstroCalculator.Location(latitude, longitude);
         return new AstroCalculator(today, astroLocation);
     }
@@ -211,8 +219,9 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
             int hour = Integer.parseInt(new SimpleDateFormat("hh", Locale.GERMANY).format(System.currentTimeMillis()));
             int minute = Integer.parseInt(new SimpleDateFormat("mm", Locale.GERMANY).format(System.currentTimeMillis()));
             int second = Integer.parseInt(new SimpleDateFormat("ss", Locale.GERMANY).format(System.currentTimeMillis()));
-            int timeZoneOffset = 1;
-            AstroDateTime today = new AstroDateTime(year, month, day, hour, minute, second, timeZoneOffset, true);
+            int timeZoneOffset = Calendar.getInstance().getTimeZone().getRawOffset() / 3600000;
+            int daySaveTime = Calendar.getInstance().getTimeZone().getDSTSavings();
+            AstroDateTime today = new AstroDateTime(year, month, day, hour, minute, second, timeZoneOffset, daySaveTime != 0);
             AstroCalculator.Location astroLocation = new AstroCalculator.Location(latitude, longitude);
             return new AstroCalculator(today, astroLocation);
         } catch (ParseException e) {
@@ -287,36 +296,15 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
                 } else {
                     Toast.makeText(this, "Brak możliwości śledzenia Twojej pozycji", Toast.LENGTH_SHORT).show();
                 }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, refreshingTime, 0,  this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, refreshingTime, 0, this);
             }
         }
     }
 
     private void setTime() {
-        Thread t = new Thread() {
-            @SuppressWarnings("EmptyCatchBlock")
-            @Override
-            public void run() {
-                long deviceDate = System.currentTimeMillis();
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-                todayDate = dateFormatter.format(deviceDate);
-                try {
-                    while (!isInterrupted()) {
-                        Thread.sleep(60000 * refreshingTime);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                long deviceDate = System.currentTimeMillis();
-                                SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-                                todayDate = dateFormatter.format(deviceDate);
-                            }
-                        });
-                    }
-                } catch (InterruptedException e) {
-                }
-            }
-        };
-        t.start();
+        long deviceDate = System.currentTimeMillis();
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+        todayDate = dateFormatter.format(deviceDate);
     }
 
     @SuppressLint("SetTextI18n")
@@ -342,6 +330,46 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         Log.d("Latitude", "status");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("todayDate", todayDate);
+        savedInstanceState.putString("sunrise", sunrise);
+        savedInstanceState.putString("sunset", sunset);
+        savedInstanceState.putString("twilightMorning", twilightMorning);
+        savedInstanceState.putString("twilightEvening", twilightEvening);
+        savedInstanceState.putString("moonrise", moonrise);
+        savedInstanceState.putString("moonset", moonset);
+        savedInstanceState.putString("nexFullMoon", nextFullMoon);
+        savedInstanceState.putString("nextNewMoon", nextNewMoon);
+        savedInstanceState.putDouble("longitude", longitude);
+        savedInstanceState.putDouble("latitude", latitude);
+        savedInstanceState.putDouble("moonPhase", moonPhase);
+        savedInstanceState.putDouble("moonAge", moonAge);
+        savedInstanceState.putInt("refreshingTime", refreshingTime);
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        todayDate = savedInstanceState.getString("todayDate");
+        sunrise = savedInstanceState.getString("sunrise");
+        sunset = savedInstanceState.getString("sunset");
+        twilightMorning = savedInstanceState.getString("twilightMorning");
+        twilightEvening = savedInstanceState.getString("twilightEvening");
+        moonrise = savedInstanceState.getString("moonrise");
+        moonset = savedInstanceState.getString("moonset");
+        nextFullMoon = savedInstanceState.getString("nextFullMoon");
+        nextNewMoon = savedInstanceState.getString("nextNewMoon");
+        longitude = savedInstanceState.getDouble("longitude");
+        latitude = savedInstanceState.getDouble("latitude");
+        moonPhase = savedInstanceState.getDouble("moonPhase");
+        moonAge = savedInstanceState.getDouble("moonAge");
+        refreshingTime = savedInstanceState.getInt("refreshingTime");
     }
 
     @Override

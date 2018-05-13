@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mateusz.weatherapp.R;
 import com.example.mateusz.weatherapp.activities.WeatherActivity;
@@ -24,9 +25,9 @@ public class SunInfoFragment extends Fragment {
     private Handler handler = new Handler();
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_sun, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_sun, container, false);
         todayDate = rootView.findViewById(R.id.dateValue);
         longitude = rootView.findViewById(R.id.longitudeValue);
         latitude = rootView.findViewById(R.id.latitudeValue);
@@ -48,7 +49,7 @@ public class SunInfoFragment extends Fragment {
             @Override
             public void run() {
                 update();
-                handler.postDelayed(this, WeatherActivity.refreshingTime * 60000);
+                handler.postDelayed(this, WeatherActivity.refreshingTime * 1000);
             }
         };
 
@@ -65,6 +66,7 @@ public class SunInfoFragment extends Fragment {
         sunset.setText(WeatherActivity.sunset);
         twilightMorning.setText(WeatherActivity.twilightMorning);
         twilightEvening.setText(WeatherActivity.twilightEvening);
+        if(getContext() != null) Toast.makeText(getContext(), "Zaktualizowano", Toast.LENGTH_SHORT).show();
     }
 
 }
