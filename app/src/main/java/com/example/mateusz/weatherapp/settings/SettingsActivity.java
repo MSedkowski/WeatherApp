@@ -1,4 +1,4 @@
-package com.example.mateusz.weatherapp;
+package com.example.mateusz.weatherapp.settings;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,6 +9,8 @@ import android.preference.PreferenceActivity;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
+
+import com.example.mateusz.weatherapp.R;
 
 import java.util.regex.Pattern;
 

@@ -1,4 +1,4 @@
-package com.example.mateusz.weatherapp;
+package com.example.mateusz.weatherapp.fragments;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.mateusz.weatherapp.R;
+import com.example.mateusz.weatherapp.activities.WeatherActivity;
 
 public class SunInfoFragment extends Fragment {
 

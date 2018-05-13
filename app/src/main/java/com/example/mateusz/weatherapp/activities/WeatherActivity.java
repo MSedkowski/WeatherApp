@@ -1,4 +1,4 @@
-package com.example.mateusz.weatherapp;
+package com.example.mateusz.weatherapp.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -23,6 +23,9 @@ import android.widget.Toast;
 
 import com.astrocalculator.AstroCalculator;
 import com.astrocalculator.AstroDateTime;
+import com.example.mateusz.weatherapp.R;
+import com.example.mateusz.weatherapp.adapters.CustomPagerAdapter;
+import com.example.mateusz.weatherapp.settings.SettingsActivity;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;

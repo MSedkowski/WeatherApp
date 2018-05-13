@@ -1,15 +1,18 @@
-package com.example.mateusz.weatherapp;
+package com.example.mateusz.weatherapp.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import com.example.mateusz.weatherapp.fragments.MoonInfoFragment;
+import com.example.mateusz.weatherapp.fragments.SunInfoFragment;
 
 public class CustomPagerAdapter extends FragmentPagerAdapter {
 
     private SunInfoFragment sunInfoFragment;
     private MoonInfoFragment moonInfoFragment;
 
-    CustomPagerAdapter(FragmentManager fm) {
+    public CustomPagerAdapter(FragmentManager fm) {
         super(fm);
         sunInfoFragment = new SunInfoFragment();
         moonInfoFragment = new MoonInfoFragment();

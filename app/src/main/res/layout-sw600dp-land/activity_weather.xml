@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WeatherActivity"
+    tools:context=".activities.WeatherActivity"
     tools:ignore="NestedWeights">
 
     <android.support.v4.view.ViewPager
@@ -26,14 +26,14 @@
 
             <fragment
                 android:id="@+id/sunInfo"
-                android:name="com.example.mateusz.weatherapp.SunInfoFragment"
+                android:name="com.example.mateusz.weatherapp.fragments.SunInfoFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
             <fragment
                 android:id="@+id/moonInfo"
-                android:name="com.example.mateusz.weatherapp.MoonInfoFragment"
+                android:name="com.example.mateusz.weatherapp.fragments.MoonInfoFragment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
