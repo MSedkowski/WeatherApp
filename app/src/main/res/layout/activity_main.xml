@@ -25,7 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="9"
-            app:srcCompat="@drawable/logo" />
+            app:srcCompat="@drawable/logo"
+            android:contentDescription="@string/applogo" />
 
         <TextView
             android:id="@+id/appName"
@@ -33,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="My Weather App"
+            android:text="@string/app_name_main"
             android:textAlignment="center"
             android:textAllCaps="true"
             android:textColor="@android:color/holo_blue_dark"
@@ -45,20 +46,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="startWeatherActivity"
-            android:text="Aktualna Pogoda" />
+            android:text="@string/sun_moon_data" />
 
         <Button
             android:id="@+id/weatherCheck"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Pogoda na świecie" />
+            android:text="@string/actual_weather" />
 
         <Button
             android:id="@+id/aboutApp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="O programie" />
+            android:text="@string/about" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

@@ -30,12 +30,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+@SuppressWarnings({"StringBufferReplaceableByString", "ConstantConditions"})
+public class WeatherActivity extends AppCompatActivity implements LocationListener {
 
-public class WeatherActivity extends AppCompatActivity implements LocationListener{
-
-    private static int REQUEST_LOCATION = 1;
     protected LocationManager locationManager;
-    protected LocationListener locationListener;
     protected Context context;
 
     public static String todayDate;
@@ -53,10 +51,8 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
     public static String nextFullMoon;
     public static String nextNewMoon;
 
-    private Button changeDate;
-
     private boolean isGPSLocationEnable = true;
-    private int refreshingTime = 1;
+    public static int refreshingTime = 1;
     private SharedPreferences sharedPrefs;
     private ViewPager viewPager;
 
@@ -65,7 +61,7 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
-        changeDate = findViewById(R.id.changeDate);
+        Button changeDate = findViewById(R.id.changeDate);
 
         changeDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,7 +76,7 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         setSunInfo(today);
         setMoonInfo(today);
 
-        viewPager = (ViewPager) findViewById(R.id.sunMoonPager);
+        viewPager = findViewById(R.id.sunMoonPager);
         FragmentManager fragmentManager = getSupportFragmentManager();
         viewPager.setAdapter(new CustomPagerAdapter(fragmentManager));
 
@@ -101,32 +97,32 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         editor.putString("latitude_value", String.valueOf(latitude));
         editor.putString("refreshing_time", String.valueOf(refreshingTime));
         editor.putString("date_value", todayDate);
-        editor.commit();
+        editor.apply();
     }
 
+    @SuppressLint("ShowToast")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 updateChanges();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
+                Toast.makeText(this, "Brak zmian", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
     public void updateChanges() {
         isGPSLocationEnable = sharedPrefs.getBoolean("gps_enabled", isGPSLocationEnable);
-        if(!isGPSLocationEnable){
+        if (!isGPSLocationEnable) {
             String longitudeText, latitudeText;
             longitudeText = sharedPrefs.getString("longitude_value", String.valueOf(longitude));
             longitude = Double.parseDouble(longitudeText);
             latitudeText = sharedPrefs.getString("latitude_value", String.valueOf(latitude));
             latitude = Double.parseDouble(latitudeText);
-        }
-        else {
+        } else {
             setLocation();
         }
         String refreshingTimeText;
@@ -140,8 +136,10 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
 
     private void setCustomData() {
         AstroCalculator today = getDataInfo(String.valueOf(todayDate));
-        setSunInfo(today);
-        setMoonInfo(today);
+        if (today != null) {
+            setSunInfo(today);
+            setMoonInfo(today);
+        }
     }
 
     private void setMoonInfo(AstroCalculator today) {
@@ -185,7 +183,7 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         nextNewMoon = nextNewMoonDateText.toString();
     }
 
-    private AstroCalculator getTodayInfo(){
+    private AstroCalculator getTodayInfo() {
         long deviceDate = System.currentTimeMillis();
         int year = Integer.parseInt(new SimpleDateFormat("YYYY", Locale.ENGLISH).format(deviceDate));
         int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.ENGLISH).format(deviceDate));
@@ -194,35 +192,33 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         int minute = Integer.parseInt(new SimpleDateFormat("mm", Locale.GERMANY).format(deviceDate));
         int second = Integer.parseInt(new SimpleDateFormat("ss", Locale.GERMANY).format(deviceDate));
         int timeZoneOffset = 1;
-        boolean dayLightSaving = true;
-        AstroDateTime today = new AstroDateTime(year, month, day, hour, minute, second, timeZoneOffset, dayLightSaving);
+        AstroDateTime today = new AstroDateTime(year, month, day, hour, minute, second, timeZoneOffset, true);
         AstroCalculator.Location astroLocation = new AstroCalculator.Location(latitude, longitude);
-        AstroCalculator todayInfo = new AstroCalculator(today, astroLocation);
-        return todayInfo;
+        return new AstroCalculator(today, astroLocation);
     }
 
-    private AstroCalculator getDataInfo(String date){
+    @SuppressLint("SimpleDateFormat")
+    private AstroCalculator getDataInfo(String date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         try {
             Date customDate = dateFormat.parse(date);
-        int year = Integer.parseInt(new SimpleDateFormat("YYYY", Locale.ENGLISH).format(customDate));
-        int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.ENGLISH).format(customDate));
-        int day = Integer.parseInt(new SimpleDateFormat("dd", Locale.ENGLISH).format(customDate));
-        int hour = Integer.parseInt(new SimpleDateFormat("hh", Locale.GERMANY).format(System.currentTimeMillis()));
-        int minute = Integer.parseInt(new SimpleDateFormat("mm", Locale.GERMANY).format(System.currentTimeMillis()));
-        int second = Integer.parseInt(new SimpleDateFormat("ss", Locale.GERMANY).format(System.currentTimeMillis()));
-        int timeZoneOffset = 1;
-        boolean dayLightSaving = true;
-        AstroDateTime today = new AstroDateTime(year, month, day, hour, minute, second, timeZoneOffset, dayLightSaving);
-        AstroCalculator.Location astroLocation = new AstroCalculator.Location(latitude, longitude);
-        AstroCalculator todayInfo = new AstroCalculator(today, astroLocation);
-        return todayInfo;
+            int year = Integer.parseInt(new SimpleDateFormat("YYYY", Locale.ENGLISH).format(customDate));
+            int month = Integer.parseInt(new SimpleDateFormat("MM", Locale.ENGLISH).format(customDate));
+            int day = Integer.parseInt(new SimpleDateFormat("dd", Locale.ENGLISH).format(customDate));
+            int hour = Integer.parseInt(new SimpleDateFormat("hh", Locale.GERMANY).format(System.currentTimeMillis()));
+            int minute = Integer.parseInt(new SimpleDateFormat("mm", Locale.GERMANY).format(System.currentTimeMillis()));
+            int second = Integer.parseInt(new SimpleDateFormat("ss", Locale.GERMANY).format(System.currentTimeMillis()));
+            int timeZoneOffset = 1;
+            AstroDateTime today = new AstroDateTime(year, month, day, hour, minute, second, timeZoneOffset, true);
+            AstroCalculator.Location astroLocation = new AstroCalculator.Location(latitude, longitude);
+            return new AstroCalculator(today, astroLocation);
         } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    @SuppressLint("DefaultLocale")
     private void setSunInfo(AstroCalculator today) {
         AstroDateTime todaySunrise = today.getSunInfo().getSunrise();
         AstroDateTime todayDawn = today.getSunInfo().getSunset();
@@ -252,10 +248,10 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
         sunrise = sunriseText.toString();
         sunset = dawnText.toString();
 
-        int differenceMorning = (todaySunrise.getHour()*60+todaySunrise.getMinute())-
-                                (todayTwilingMorning.getHour()*60+todayTwilingMorning.getMinute());
-        int differenceEvening = (todayTwilingEvening.getHour()*60+todayTwilingEvening.getMinute())-
-                                (todayDawn.getHour()*60+todayDawn.getMinute());
+        int differenceMorning = (todaySunrise.getHour() * 60 + todaySunrise.getMinute()) -
+                (todayTwilingMorning.getHour() * 60 + todayTwilingMorning.getMinute());
+        int differenceEvening = (todayTwilingEvening.getHour() * 60 + todayTwilingEvening.getMinute()) -
+                (todayDawn.getHour() * 60 + todayDawn.getMinute());
 
         StringBuilder twilightMorningText = new StringBuilder();
         twilightMorningText.append(differenceMorning);
@@ -276,44 +272,45 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
                 != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
+            int REQUEST_LOCATION = 1;
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-        }
-        else {
-            if(isGPSLocationEnable) {
+        } else {
+            if (isGPSLocationEnable) {
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-                if(location != null) {
+                if (location != null) {
                     longitude = location.getLongitude();
                     latitude = location.getLatitude();
                 } else {
                     Toast.makeText(this, "Brak możliwości śledzenia Twojej pozycji", Toast.LENGTH_SHORT).show();
                 }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, refreshingTime, 0, (LocationListener) this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, refreshingTime, 0,  this);
             }
         }
     }
+
     private void setTime() {
         Thread t = new Thread() {
+            @SuppressWarnings("EmptyCatchBlock")
             @Override
             public void run() {
                 long deviceDate = System.currentTimeMillis();
                 SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-                String currentDate = dateFormatter.format(deviceDate);
-                todayDate = currentDate;
+                todayDate = dateFormatter.format(deviceDate);
                 try {
-                    while(!isInterrupted()) {
+                    while (!isInterrupted()) {
                         Thread.sleep(60000 * refreshingTime);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 long deviceDate = System.currentTimeMillis();
                                 SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-                                String currentDate = dateFormatter.format(deviceDate);
-                                todayDate = currentDate;
+                                todayDate = dateFormatter.format(deviceDate);
                             }
                         });
                     }
-                } catch (InterruptedException e) {}
+                } catch (InterruptedException e) {
+                }
             }
         };
         t.start();
@@ -322,7 +319,7 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
     @SuppressLint("SetTextI18n")
     @Override
     public void onLocationChanged(Location location) {
-        if(isGPSLocationEnable) {
+        if (isGPSLocationEnable) {
             longitude = location.getLongitude();
             latitude = location.getLatitude();
             viewPager.getAdapter().notifyDataSetChanged();
@@ -331,21 +328,21 @@ public class WeatherActivity extends AppCompatActivity implements LocationListen
 
     @Override
     public void onProviderDisabled(String provider) {
-        Log.d("Latitude","disable");
+        Log.d("Latitude", "disable");
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-        Log.d("Latitude","enable");
+        Log.d("Latitude", "enable");
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        Log.d("Latitude","status");
+        Log.d("Latitude", "status");
     }
 
     @Override
     public void onBackPressed() {
-       finish();
+        finish();
     }
 }

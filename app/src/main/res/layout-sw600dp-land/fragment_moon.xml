@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".SunInfoFragment"
+    tools:context=".MoonInfoFragment"
     tools:ignore="NestedWeights, RtlSymmetry">
 
     <LinearLayout
@@ -19,8 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3"
-            app:srcCompat="@drawable/sun"
-            android:contentDescription="@string/sun_icon" />
+            app:srcCompat="@drawable/moon"
+            android:contentDescription="@string/moon_icon" />
 
         <LinearLayout
             android:id="@+id/firstRow"
@@ -129,40 +129,40 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/sunrise"
+                    android:id="@+id/moonrise"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="end|center_vertical"
                     android:paddingEnd="5dp"
-                    android:text="@string/sunrise" />
+                    android:text="@string/moonrise" />
 
                 <TextView
-                    android:id="@+id/dawn"
+                    android:id="@+id/moonset"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="end|center_vertical"
                     android:paddingEnd="5dp"
-                    android:text="@string/sunset" />
+                    android:text="@string/moonset" />
 
                 <TextView
-                    android:id="@+id/twilightEvening"
+                    android:id="@+id/nextFullMoon"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="end|center_vertical"
                     android:paddingEnd="5dp"
-                    android:text="@string/twillight_evening" />
+                    android:text="@string/next_full_moon" />
 
                 <TextView
-                    android:id="@+id/twilightMorning"
+                    android:id="@+id/nextNewMoon"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="end|center_vertical"
                     android:paddingEnd="5dp"
-                    android:text="@string/twillight_morning" />
+                    android:text="@string/next_new_moon" />
             </LinearLayout>
 
             <LinearLayout
@@ -173,28 +173,28 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/sunriseValue"
+                    android:id="@+id/moonriseValue"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical" />
 
                 <TextView
-                    android:id="@+id/dawnValue"
+                    android:id="@+id/moonsetValue"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical" />
 
                 <TextView
-                    android:id="@+id/twilightEveningValue"
+                    android:id="@+id/nextFullMoonValue"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical" />
 
                 <TextView
-                    android:id="@+id/twilightMorningValue"
+                    android:id="@+id/nextNewMoonValue"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"

@@ -6,10 +6,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 public class CustomPagerAdapter extends FragmentPagerAdapter {
 
-    public SunInfoFragment sunInfoFragment;
-    public MoonInfoFragment moonInfoFragment;
+    private SunInfoFragment sunInfoFragment;
+    private MoonInfoFragment moonInfoFragment;
 
-    public CustomPagerAdapter(FragmentManager fm) {
+    CustomPagerAdapter(FragmentManager fm) {
         super(fm);
         sunInfoFragment = new SunInfoFragment();
         moonInfoFragment = new MoonInfoFragment();
@@ -30,16 +30,6 @@ public class CustomPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         return 2;
-    }
-
-    @Override
-    public void notifyDataSetChanged() {
-        sunInfoFragment.updateLocation();
-        sunInfoFragment.updateDate();
-        sunInfoFragment.updateSunInfo();
-        moonInfoFragment.updateLocation();
-        moonInfoFragment.updateDate();
-        moonInfoFragment.updateMoonInfo();
     }
 
 }

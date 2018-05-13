@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false"
     android:fillViewport="true"
-    tools:context=".MoonInfoFragment"
-    tools:ignore="NestedWeights, RtlSymmetry">
+    tools:context=".SunInfoFragment"
+    tools:ignore="RtlSymmetry, NestedWeights">
 
     <LinearLayout
         android:id="@+id/mainLayout"
@@ -20,12 +19,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:adjustViewBounds="true"
-            app:srcCompat="@drawable/moon"
-            android:contentDescription="@string/moon_icon" />
+            app:srcCompat="@drawable/sun"
+            android:contentDescription="@string/sun_icon" />
 
         <LinearLayout
-            android:id="@+id/mainRightSide"
+            android:id="@+id/rightSide"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
@@ -34,8 +32,8 @@
             <LinearLayout
                 android:id="@+id/firstRow"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
                 android:orientation="horizontal"
                 android:baselineAligned="false">
 
@@ -125,85 +123,85 @@
             <LinearLayout
                 android:id="@+id/secondRow"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
                 android:orientation="horizontal"
                 android:baselineAligned="false">
 
                 <LinearLayout
-                    android:id="@+id/leftSide"
+                    android:id="@+id/leftSideOfSecondRow"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/moonrise"
+                        android:id="@+id/sunrise"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="end|center_vertical"
                         android:paddingEnd="5dp"
-                        android:text="@string/moonrise" />
+                        android:text="@string/sunrise" />
 
                     <TextView
-                        android:id="@+id/moonset"
+                        android:id="@+id/dawn"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="end|center_vertical"
                         android:paddingEnd="5dp"
-                        android:text="@string/moonset" />
+                        android:text="@string/sunset" />
 
                     <TextView
-                        android:id="@+id/nextFullMoon"
+                        android:id="@+id/twilightEvening"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="end|center_vertical"
                         android:paddingEnd="5dp"
-                        android:text="@string/next_full_moon" />
+                        android:text="@string/twillight_evening" />
 
                     <TextView
-                        android:id="@+id/nextNewMoon"
+                        android:id="@+id/twilightMorning"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="end|center_vertical"
                         android:paddingEnd="5dp"
-                        android:text="@string/next_new_moon" />
+                        android:text="@string/twillight_morning" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/rightSide"
+                    android:id="@+id/rightSideOfSecondRow"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/moonriseValue"
+                        android:id="@+id/sunriseValue"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical" />
 
                     <TextView
-                        android:id="@+id/moonsetValue"
+                        android:id="@+id/dawnValue"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical" />
 
                     <TextView
-                        android:id="@+id/nextFullMoonValue"
+                        android:id="@+id/twilightEveningValue"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="center_vertical" />
 
                     <TextView
-                        android:id="@+id/nextNewMoonValue"
+                        android:id="@+id/twilightMorningValue"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"

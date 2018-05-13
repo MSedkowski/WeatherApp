@@ -20,12 +20,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:adjustViewBounds="true"
             app:srcCompat="@drawable/moon"
             android:contentDescription="@string/moon_icon" />
 
         <LinearLayout
-            android:id="@+id/mainRightSide"
+            android:id="@+id/rightSide"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
@@ -34,8 +33,8 @@
             <LinearLayout
                 android:id="@+id/firstRow"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
                 android:orientation="horizontal"
                 android:baselineAligned="false">
 
@@ -125,13 +124,13 @@
             <LinearLayout
                 android:id="@+id/secondRow"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
                 android:orientation="horizontal"
                 android:baselineAligned="false">
 
                 <LinearLayout
-                    android:id="@+id/leftSide"
+                    android:id="@+id/leftSideOfSecondRow"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -175,7 +174,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/rightSide"
+                    android:id="@+id/rightSideOfSecondRow"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

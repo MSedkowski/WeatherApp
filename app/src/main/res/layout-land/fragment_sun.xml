@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    tools:context=".SunInfoFragment">
+    tools:context=".SunInfoFragment"
+    tools:ignore="RtlSymmetry, NestedWeights">
 
     <LinearLayout
         android:id="@+id/mainLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <ImageView
@@ -19,7 +20,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:adjustViewBounds="true"
-            app:srcCompat="@drawable/sun" />
+            app:srcCompat="@drawable/sun"
+            android:contentDescription="@string/image_view_description" />
 
         <LinearLayout
             android:id="@+id/mainRightSide"
@@ -33,7 +35,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="3"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:id="@+id/leftSideOfFirstRow"
@@ -47,40 +50,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingRight="5dp"
-                        android:text="Szerokość geograficzna"
-                        android:textAlignment="textEnd" />
+                        android:gravity="end|center_vertical"
+                        android:paddingEnd="5dp"
+                        android:text="@string/latitude" />
 
                     <TextView
                         android:id="@+id/longitude"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingRight="5dp"
-                        android:text="Długość geograficzna"
-                        android:textAlignment="textEnd" />
+                        android:gravity="end|center_vertical"
+                        android:paddingEnd="5dp"
+                        android:text="@string/longitude" />
 
                     <TextView
                         android:id="@+id/date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingRight="5dp"
-                        android:text="Data"
-                        android:textAlignment="textEnd" />
+                        android:gravity="end|center_vertical"
+                        android:paddingEnd="5dp"
+                        android:text="@string/date" />
 
                     <TextView
                         android:id="@+id/time"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingRight="5dp"
-                        android:text="Czas"
-                        android:textAlignment="textEnd" />
+                        android:gravity="end|center_vertical"
+                        android:paddingEnd="5dp"
+                        android:text="@string/time" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -127,7 +126,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="3"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:id="@+id/leftSide"
@@ -141,36 +141,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:gravity="right|center_vertical"
-                        android:paddingRight="5dp"
-                        android:text="Wschód słońca: " />
+                        android:gravity="end|center_vertical"
+                        android:paddingEnd="5dp"
+                        android:text="@string/sunrise" />
 
                     <TextView
                         android:id="@+id/dawn"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:gravity="right|center_vertical"
-                        android:paddingRight="5dp"
-                        android:text="Zachód słońca: " />
+                        android:gravity="end|center_vertical"
+                        android:paddingEnd="5dp"
+                        android:text="@string/sunset" />
 
                     <TextView
                         android:id="@+id/twilightEvening"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:gravity="right|center_vertical"
-                        android:paddingRight="5dp"
-                        android:text="Zmierzch cywilny: " />
+                        android:gravity="end|center_vertical"
+                        android:paddingEnd="5dp"
+                        android:text="@string/twillight_evening" />
 
                     <TextView
                         android:id="@+id/twilightMorning"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:gravity="right|center_vertical"
-                        android:paddingRight="5dp"
-                        android:text="Świt cywilny: " />
+                        android:gravity="end|center_vertical"
+                        android:paddingEnd="5dp"
+                        android:text="@string/twillight_morning" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -209,29 +209,6 @@
                         android:gravity="center_vertical" />
                 </LinearLayout>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/buttonRow"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/changeData"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Zmień położenie" />
-
-                <Button
-                    android:id="@+id/changeDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Zmień datę" />
             </LinearLayout>
 
         </LinearLayout>
