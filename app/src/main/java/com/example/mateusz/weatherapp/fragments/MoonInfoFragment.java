@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mateusz.weatherapp.R;
-import com.example.mateusz.weatherapp.activities.WeatherActivity;
+import com.example.mateusz.weatherapp.activities.SunMoonActivity;
 
 import java.text.DecimalFormat;
 
@@ -43,7 +43,7 @@ public class MoonInfoFragment extends InfoFragment {
             @Override
             public void run() {
                 update();
-                handler.postDelayed(this, WeatherActivity.refreshingTime * 1000);
+                handler.postDelayed(this, SunMoonActivity.refreshingTime * 1000);
             }
         };
 
@@ -56,13 +56,13 @@ public class MoonInfoFragment extends InfoFragment {
         DecimalFormat format = new DecimalFormat();
         format.setMaximumFractionDigits(2);
         super.update();
-        moonrise.setText(WeatherActivity.moonrise);
-        moonset.setText(WeatherActivity.moonset);
-        nextFullMoon.setText(WeatherActivity.nextFullMoon);
-        nextNewMoon.setText(WeatherActivity.nextNewMoon);
-        moonAge.setText(format.format(WeatherActivity.moonAge));
+        moonrise.setText(SunMoonActivity.moonrise);
+        moonset.setText(SunMoonActivity.moonset);
+        nextFullMoon.setText(SunMoonActivity.nextFullMoon);
+        nextNewMoon.setText(SunMoonActivity.nextNewMoon);
+        moonAge.setText(format.format(SunMoonActivity.moonAge));
         StringBuilder moonPhaseText = new StringBuilder();
-        moonPhaseText.append(format.format(WeatherActivity.moonPhase))
+        moonPhaseText.append(format.format(SunMoonActivity.moonPhase))
                 .append("%");
         moonPhase.setText(moonPhaseText);
         if (getContext() != null)

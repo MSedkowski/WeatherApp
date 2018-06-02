@@ -15,9 +15,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
+    public void startSunMoonActivity(View view) {
+        Intent weatherActivity = new Intent(MainActivity.this, SunMoonActivity.class);
+        MainActivity.this.startActivity(weatherActivity);
+    }
+
     public void startWeatherActivity(View view) {
         Intent weatherActivity = new Intent(MainActivity.this, WeatherActivity.class);
-        //simpleCalculator.putExtra("darkMode", darkMode); //Optional parameters
         MainActivity.this.startActivity(weatherActivity);
     }
 

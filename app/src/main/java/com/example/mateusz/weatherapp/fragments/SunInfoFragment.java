@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mateusz.weatherapp.R;
-import com.example.mateusz.weatherapp.activities.WeatherActivity;
+import com.example.mateusz.weatherapp.activities.SunMoonActivity;
 
 public class SunInfoFragment extends InfoFragment {
 
@@ -30,17 +30,17 @@ public class SunInfoFragment extends InfoFragment {
         twilightMorning = rootView.findViewById(R.id.twilightMorningValue);
         twilightEvening = rootView.findViewById(R.id.twilightEveningValue);
 
-        sunrise.setText(WeatherActivity.sunrise);
-        sunset.setText(WeatherActivity.sunset);
-        twilightMorning.setText(WeatherActivity.twilightMorning);
-        twilightEvening.setText(WeatherActivity.twilightEvening);
+        sunrise.setText(SunMoonActivity.sunrise);
+        sunset.setText(SunMoonActivity.sunset);
+        twilightMorning.setText(SunMoonActivity.twilightMorning);
+        twilightEvening.setText(SunMoonActivity.twilightEvening);
 
         Runnable runnable = new Runnable() {
 
             @Override
             public void run() {
                 update();
-                handler.postDelayed(this, WeatherActivity.refreshingTime * 1000);
+                handler.postDelayed(this, SunMoonActivity.refreshingTime * 1000);
             }
         };
 
@@ -51,10 +51,10 @@ public class SunInfoFragment extends InfoFragment {
 
     public void update() {
         super.update();
-        sunrise.setText(WeatherActivity.sunrise);
-        sunset.setText(WeatherActivity.sunset);
-        twilightMorning.setText(WeatherActivity.twilightMorning);
-        twilightEvening.setText(WeatherActivity.twilightEvening);
+        sunrise.setText(SunMoonActivity.sunrise);
+        sunset.setText(SunMoonActivity.sunset);
+        twilightMorning.setText(SunMoonActivity.twilightMorning);
+        twilightEvening.setText(SunMoonActivity.twilightEvening);
         if(getContext() != null) Toast.makeText(getContext(), "Zaktualizowano", Toast.LENGTH_SHORT).show();
     }
 

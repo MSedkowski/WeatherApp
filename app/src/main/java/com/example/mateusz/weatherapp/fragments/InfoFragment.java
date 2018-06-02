@@ -4,14 +4,13 @@ package com.example.mateusz.weatherapp.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.mateusz.weatherapp.R;
-import com.example.mateusz.weatherapp.activities.WeatherActivity;
+import com.example.mateusz.weatherapp.activities.SunMoonActivity;
 
 public class InfoFragment extends Fragment {
     private TextView todayDate;
@@ -27,16 +26,16 @@ public class InfoFragment extends Fragment {
         longitude = rootView.findViewById(R.id.longitudeValue);
         latitude = rootView.findViewById(R.id.latitudeValue);
 
-        todayDate.setText(WeatherActivity.todayDate);
-        longitude.setText(String.valueOf(WeatherActivity.longitude));
-        latitude.setText(String.valueOf(WeatherActivity.latitude));
+        todayDate.setText(SunMoonActivity.todayDate);
+        longitude.setText(String.valueOf(SunMoonActivity.longitude));
+        latitude.setText(String.valueOf(SunMoonActivity.latitude));
         return rootView;
     }
 
     public void update() {
-        longitude.setText(String.valueOf(WeatherActivity.longitude));
-        latitude.setText(String.valueOf(WeatherActivity.latitude));
-        todayDate.setText(WeatherActivity.todayDate);
+        longitude.setText(String.valueOf(SunMoonActivity.longitude));
+        latitude.setText(String.valueOf(SunMoonActivity.latitude));
+        todayDate.setText(SunMoonActivity.todayDate);
     }
 
     public void setLayout(int layout){
