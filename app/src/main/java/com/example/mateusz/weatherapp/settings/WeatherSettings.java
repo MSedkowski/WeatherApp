@@ -3,10 +3,10 @@ package com.example.mateusz.weatherapp.settings;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 
@@ -14,7 +14,7 @@ import com.example.mateusz.weatherapp.R;
 
 import java.util.regex.Pattern;
 
-public class SettingsActivity extends PreferenceActivity {
+public class WeatherSettings extends PreferenceActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,19 +34,19 @@ public class SettingsActivity extends PreferenceActivity {
     public static class MyPreferenceFragment extends PreferenceFragment {
         private final static Pattern longitudePattern = Pattern.compile("^(\\+|-)?(?:180(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\\.[0-9]{1,6})?))$");
         private final static Pattern latitudePattern = Pattern.compile("^(\\+|-)?(?:90(?:(?:\\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\\.[0-9]{1,6})?))$");
-        private final static Pattern datePattern = Pattern.compile("^(?:(?:31(\\/)(?:0?[13578]|1[02]))\\1|(?:(?:29|30)(\\/)(?:0?[1,3-9]|1[0-2])\\2))(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$|^(?:29(\\/)0?2\\3(?:(?:(?:1[6-9]|[2-9]\\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00))))$|^(?:0?[1-9]|1\\d|2[0-8])(\\/)(?:(?:0?[1-9])|(?:1[0-2]))\\4(?:(?:1[6-9]|[2-9]\\d)?\\d{2})$");
         private SwitchPreference isGPSEnabled;
-
+        private SwitchPreference tempUnits;
 
         @Override
         public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.preferences);
+            addPreferencesFromResource(R.xml.weather_preferences);
 
             EditTextPreference longitude = (EditTextPreference) getPreferenceScreen().findPreference("longitude_value");
             EditTextPreference latitude = (EditTextPreference) getPreferenceScreen().findPreference("latitude_value");
             isGPSEnabled = (SwitchPreference) getPreferenceScreen().findPreference("gps_enabled");
-            EditTextPreference date = (EditTextPreference) getPreferenceScreen().findPreference("date_value");
+            tempUnits = (SwitchPreference) getPreferenceScreen().findPreference("c_or_f");
+            EditTextPreference cityName = (EditTextPreference) getPreferenceScreen().findPreference("cityName_value");
 
             longitude.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
@@ -102,14 +102,14 @@ public class SettingsActivity extends PreferenceActivity {
                 }
             });
 
-            date.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            cityName.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     Boolean rtnval = true;
-                    if (isValidDate(newValue.toString())) {
+                    if (newValue.toString().equals("") || newValue.toString().equals(" ")) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("Błąd");
-                        builder.setMessage("Wprowadzono błędną datę.\n Wprowadź datę w formacie dd/mm/yyyy.");
+                        builder.setMessage("Wprowadź nazwę poszukiwanego miasta");
                         builder.setPositiveButton(android.R.string.ok, null);
                         builder.show();
                         rtnval = false;
@@ -126,10 +126,5 @@ public class SettingsActivity extends PreferenceActivity {
         private boolean isValidLatitude(String latitude) {
             return !latitudePattern.matcher(latitude).matches();
         }
-
-        private boolean isValidDate(String date) {
-            return !datePattern.matcher(date).matches();
-        }
-
     }
 }

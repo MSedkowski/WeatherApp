@@ -79,5 +79,20 @@
     <string name="PL_46">Opady śniegu</string>
     <string name="PL_47">Przejściowe ulewne deszcze w czasie burzy</string>
     <string name="PL_3200">Dane pogodowe nie dostępne</string>
+    <string name="temperature">Temperatura:</string>
+    <string name="pressure">Ciśnienie:</string>
+    <string name="humidity">Wilgotność:</string>
+    <string name="tempMax">Temp. maksymalna:</string>
+    <string name="tempMin">Temp. minimalna:</string>
+    <string name="PL_Mon">Poniedziałek</string>
+    <string name="PL_Tue">Wtorek</string>
+    <string name="PL_Wed">Środa</string>
+    <string name="PL_Thu">Czwartek</string>
+    <string name="PL_Fri">Piątek</string>
+    <string name="PL_Sat">Sobota</string>
+    <string name="PL_Sun">Niedziela</string>
+    <string name="refresh">Odśwież</string>
+
+
 
 </resources>

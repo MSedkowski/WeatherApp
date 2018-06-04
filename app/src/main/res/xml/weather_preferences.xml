@@ -26,12 +26,21 @@
         android:entryValues="@array/list_update_intervals_values"
         android:key="refreshing_time"
         android:title="Czas odświeżania" />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="c_or_f"
+        android:summary="Przełącz by zmienić jednostkę"
+        android:summaryOff="Farenheit"
+        android:summaryOn="Celsius"
+        android:textOff="Farenheit"
+        android:textOn="Celsius"
+        android:title="Jednostki" />
     <EditTextPreference
-        android:defaultValue="Default value"
-        android:inputType="date"
-        android:key="date_value"
+        android:defaultValue=" "
+        android:inputType="text"
+        android:key="cityName_value"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:summary="Wprowadź datę dla której chcesz obliczyć dane słońca i księżyca."
-        android:title="Data" />
+        android:summary="Podaj nazwę miasta."
+        android:title="Miasto" />
 </PreferenceScreen>
