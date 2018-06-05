@@ -19,11 +19,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mateusz.weatherapp.R;
+import com.example.mateusz.weatherapp.db.LocationDbAdapter;
 import com.example.mateusz.weatherapp.fragments.DayWeather;
 import com.example.mateusz.weatherapp.services.WeatherServiceCallback;
 import com.example.mateusz.weatherapp.services.YahooWeatherService;
@@ -47,6 +49,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     private TextView humidityValue;
     private TextView currentDate;
     private Button changeDate;
+    private ImageButton saveData;
 
     private YahooWeatherService service;
     private ProgressDialog dialog;
@@ -62,6 +65,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     private String locationString;
     private String cityName;
     private boolean tempSignIsC = true;
+    private LocationDbAdapter locationDbAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +80,19 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
         humidityValue = findViewById(R.id.humidityValue);
         currentDate = findViewById(R.id.currentDateValue);
         changeDate = findViewById(R.id.changeLocationButton);
+        saveData = findViewById(R.id.saveButton);
 
         changeDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 changePreferences();
+            }
+        });
+
+        saveData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveCurrentLocation();
             }
         });
 
@@ -93,6 +105,41 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
         setLocation();
         service.refreshWeather(locationString, 0, 'c');
         updatePreferences();
+
+        locationDbAdapter = new LocationDbAdapter(getApplicationContext());
+        locationDbAdapter.open();
+        checkIfLocationIsSaved();
+    }
+
+    private void checkIfLocationIsSaved() {
+        int id = locationDbAdapter.getLocationID(longitude, latitude);
+        if(id == 0){
+            saveData.setBackground(getResources().getDrawable(R.drawable.star));
+        }
+        else {
+            saveData.setBackground(getResources().getDrawable(R.drawable.star_clicked));
+        }
+    }
+
+    private void saveCurrentLocation() {
+        if(saveData.getBackground().getConstantState() == getResources().getDrawable(R.drawable.star).getConstantState()) {
+            saveLocationIntoDatabase();
+            saveData.setBackgroundResource(R.drawable.star_clicked);
+        }
+        else {
+            removeLocationFromDatabase();
+            saveData.setBackgroundResource(R.drawable.star);
+        }
+
+    }
+
+    private void removeLocationFromDatabase() {
+        int id = locationDbAdapter.getLocationID(longitude, latitude);
+        locationDbAdapter.deleteLocation(id);
+    }
+
+    private void saveLocationIntoDatabase() {
+        locationDbAdapter.insertLocation(longitude, latitude, localizationValue.getText().toString());
     }
 
     private void changePreferences() {
@@ -352,5 +399,18 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
 
         }
         return getResources().getDrawable(resourceId);
+    }
+
+    @Override
+    protected void onResume() {
+        checkIfLocationIsSaved();
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(locationDbAdapter != null)
+            locationDbAdapter.close();
+        super.onDestroy();
     }
 }

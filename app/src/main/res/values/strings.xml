@@ -13,6 +13,7 @@
     <string name="twillight_morning">Zmierzch cywilny:</string>
     <string name="twillight_evening">Świt cywilny:</string>
     <string name="change_date_location">Zmień datę / lokalizację</string>
+    <string name="change_location">Lokalizacja</string>
     <string name="applogo">appLogo</string>
     <string name="app_name_main">Aplikacja pogodowa</string>
     <string name="sun_moon_data">Dane Słońce/Księżyc</string>
