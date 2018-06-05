@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WeatherActivity"
-    tools:ignore="RtlCompat">
+    android:fillViewport="true"
+    tools:context=".fragments.InfoFragment"
+    tools:ignore="NestedWeights, RtlSymmetry">
 
     <LinearLayout
         android:id="@+id/mainLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <ImageView
@@ -18,14 +19,16 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="3"
-            app:srcCompat="@drawable/sun" />
+            app:srcCompat="@drawable/moon"
+            android:contentDescription="@string/moon_icon" />
 
         <LinearLayout
             android:id="@+id/firstRow"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:id="@+id/leftSideOfFirstRow"
@@ -39,40 +42,36 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Szerokość geograficzna"
-                    android:textAlignment="textEnd" />
+                    android:gravity="end|center_vertical"
+                    android:paddingEnd="5dp"
+                    android:text="@string/latitude"/>
 
                 <TextView
                     android:id="@+id/longitude"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Długość geograficzna"
-                    android:textAlignment="textEnd" />
+                    android:gravity="end|center_vertical"
+                    android:paddingEnd="5dp"
+                    android:text="@string/longitude"/>
 
                 <TextView
                     android:id="@+id/date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Data"
-                    android:textAlignment="textEnd" />
+                    android:gravity="end|center_vertical"
+                    android:paddingEnd="5dp"
+                    android:text="@string/date"/>
 
                 <TextView
                     android:id="@+id/time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Czas"
-                    android:textAlignment="textEnd" />
+                    android:gravity="end|center_vertical"
+                    android:paddingEnd="5dp"
+                    android:text="@string/time"/>
             </LinearLayout>
 
             <LinearLayout
@@ -119,7 +118,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:id="@+id/leftSide"
@@ -129,40 +129,57 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/sunrise"
+                    android:id="@+id/moonrise"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:gravity="right|center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Wschód słońca: " />
+                    android:gravity="end|center_vertical"
+                    android:paddingEnd="5dp"
+                    android:text="@string/moonrise" />
 
                 <TextView
-                    android:id="@+id/dawn"
+                    android:id="@+id/moonset"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:gravity="right|center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Zachód słońca: " />
+                    android:gravity="end|center_vertical"
+                    android:paddingEnd="5dp"
+                    android:text="@string/moonset" />
 
                 <TextView
-                    android:id="@+id/twilightEvening"
+                    android:id="@+id/nextFullMoon"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:gravity="right|center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Zmierzch cywilny: " />
+                    android:gravity="end|center_vertical"
+                    android:paddingEnd="5dp"
+                    android:text="@string/next_full_moon" />
 
                 <TextView
-                    android:id="@+id/twilightMorning"
+                    android:id="@+id/nextNewMoon"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:gravity="right|center_vertical"
-                    android:paddingRight="5dp"
-                    android:text="Świt cywilny: " />
+                    android:gravity="end|center_vertical"
+                    android:paddingEnd="5dp"
+                    android:text="@string/next_new_moon" />
+                <TextView
+                    android:id="@+id/moonAge"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
+                    android:paddingEnd="5dp"
+                    android:text="@string/moon_age" />
+
+                <TextView
+                    android:id="@+id/moonPhase"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
+                    android:paddingEnd="5dp"
+                    android:text="@string/moon_phase" />
             </LinearLayout>
 
             <LinearLayout
@@ -173,28 +190,41 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/sunriseValue"
+                    android:id="@+id/moonriseValue"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical" />
 
                 <TextView
-                    android:id="@+id/dawnValue"
+                    android:id="@+id/moonsetValue"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical" />
 
                 <TextView
-                    android:id="@+id/twilightEveningValue"
+                    android:id="@+id/nextFullMoonValue"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical" />
 
                 <TextView
-                    android:id="@+id/twilightMorningValue"
+                    android:id="@+id/nextNewMoonValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" />
+                <TextView
+                    android:id="@+id/moonAgeValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical" />
+
+                <TextView
+                    android:id="@+id/moonPhaseValue"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
@@ -203,27 +233,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/buttonRow"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/changeData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Zmień położenie" />
-
-            <Button
-                android:id="@+id/changeDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Zmień datę" />
-        </LinearLayout>
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</ScrollView>
