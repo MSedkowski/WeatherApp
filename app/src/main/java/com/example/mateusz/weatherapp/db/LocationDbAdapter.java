@@ -107,7 +107,7 @@ public class LocationDbAdapter {
 
     public LocationModel getLocation(long id) {
         String[] columns = {KEY_ID, KEY_LONGITUDE, KEY_LATITUDE, KEY_CITY};
-        String where = KEY_ID + "=" + id;
+        String where = KEY_ID + " = " + id;
         Cursor cursor = db.query(DB_LOCATION_TABLE, columns, where, null, null, null, null);
         LocationModel location = null;
         if(cursor != null && cursor.moveToFirst()) {
@@ -119,9 +119,9 @@ public class LocationDbAdapter {
         return location;
     }
 
-    public int getLocationID(double longitude, double latitude) {
-        String[] columns = {KEY_ID, KEY_LONGITUDE, KEY_LATITUDE, KEY_CITY};
-        String where = KEY_LONGITUDE + "=" + longitude + " AND " + KEY_LATITUDE + "=" + latitude;
+    public int getLocationID(String cityName) {
+        String[] columns = {KEY_ID};
+        String where = KEY_CITY + "=" + "\'" + cityName + "\'";
         Cursor cursor = db.query(DB_LOCATION_TABLE, columns, where, null, null, null, null);
         int id = 0;
         if(cursor != null && cursor.moveToFirst()) {
