@@ -12,6 +12,11 @@ public class Channel implements JSONPopulator {
     private Units units;
     private Location location;
     private Atmosphere atmosphere;
+    private Wind wind;
+
+    public Wind getWind() {
+        return wind;
+    }
 
     public Atmosphere getAtmosphere() {
         return atmosphere;
@@ -44,6 +49,9 @@ public class Channel implements JSONPopulator {
         atmosphere = new Atmosphere();
         atmosphere.populate(data.optJSONObject("atmosphere"));
 
+        wind = new Wind();
+        wind.populate(data.optJSONObject("wind"));
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -56,6 +64,7 @@ public class Channel implements JSONPopulator {
             data.put("units", units.toJSON());
             data.put("location", location.toJSON());
             data.put("atmosphere", atmosphere.toJSON());
+            data.put("wind", wind.toJSON());
         } catch(JSONException e) {
             e.printStackTrace();
         }

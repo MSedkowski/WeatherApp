@@ -1,64 +1,82 @@
 package com.example.mateusz.weatherapp.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mateusz.weatherapp.R;
+import com.example.mateusz.weatherapp.activities.WeatherActivity;
+import com.example.mateusz.weatherapp.settings.WeatherSettings;
 import com.example.mateusz.weatherapp.weatherData.Condition;
 import com.example.mateusz.weatherapp.weatherData.Units;
 
+import java.util.ArrayList;
+import java.util.Locale;
 
-public class DayWeather extends Fragment {
+public class TodayWeather extends Fragment {
 
+    private TextView localizationValue;
+    private TextView currentDateValue;
+    private TextView weatherValue;
     private ImageView weatherIcon;
-    private TextView dayName;
-    private TextView dayWeatherValue;
-    private TextView maxTempValue;
-    private TextView minTempValue;
+    private TextView tempValue;
+    private TextView pressureValue;
+    private TextView humidityValue;
+    private TextView windValue;
 
-    public DayWeather() {
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.fragment_today_weather, container, false);
+        localizationValue = rootView.findViewById(R.id.localizationValue);
+        currentDateValue = rootView.findViewById(R.id.currentDateValue);
+        weatherValue = rootView.findViewById(R.id.weatherValue);
+        weatherIcon = rootView.findViewById(R.id.weatherIcon);
+        tempValue = rootView.findViewById(R.id.tempValue);
+        pressureValue = rootView.findViewById(R.id.pressureValue);
+        humidityValue = rootView.findViewById(R.id.humidityValue);
+        windValue = rootView.findViewById(R.id.windValue);
+
+        return rootView;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_next_day_weather, container, false);
-
-        weatherIcon = view.findViewById(R.id.weatherIcon);
-        dayName = view.findViewById(R.id.dayName);
-        dayWeatherValue = view.findViewById(R.id.dayWeatherValue);
-        maxTempValue = view.findViewById(R.id.maxTempValue);
-        minTempValue = view.findViewById(R.id.minTempValue);
-
-        return view;
+    public void onStart() {
+        super.onStart();
+        update();
     }
 
-    public void loadForecast(Condition forecast, Units units) {
-        weatherIcon.setImageDrawable(setWeatherIcon(forecast));
-        dayName.setText(setDayName(forecast));
-        dayWeatherValue.setText(setDescription(forecast));
-        maxTempValue.setText("" + forecast.getHighTemperature() + "\u00B0" + units.getTemperature());
-        minTempValue.setText("" + forecast.getLowTemperature() + "\u00B0" + units.getTemperature());
+    public void update() {
+        localizationValue.setText(WeatherActivity.localization);
+        currentDateValue.setText(WeatherActivity.currentDate);
+        weatherValue.setText(WeatherActivity.currentWeather);
+        weatherIcon.setImageDrawable(setWeatherIcon(WeatherActivity.code));
+        tempValue.setText(WeatherActivity.temp);
+        pressureValue.setText(WeatherActivity.pressure);
+        humidityValue.setText(WeatherActivity.humidity);
+        windValue.setText(WeatherActivity.wind + " " + WeatherActivity.windUnits);
+        if (getContext() != null)
+            Toast.makeText(getContext(), "Zaktualizowano", Toast.LENGTH_SHORT).show();
     }
 
-    private String setDescription(Condition item) {
-        int itemCode = item.getCode();
-        int resID = getResources().getIdentifier("PL_" + itemCode, "string", getActivity().getPackageName());
-        return getString(resID);
-    }
-
-    private String setDayName(Condition item) {
-        int resID = getResources().getIdentifier("PL_" + item.getDay(), "string", getActivity().getPackageName());
-        return getString(resID);
-    }
-
-    private Drawable setWeatherIcon(Condition item) {
-        int code = item.getCode();
+    private Drawable setWeatherIcon(int code) {
         int resourceId = getResources().getIdentifier("drawable/icon_14", "drawable", getActivity().getPackageName());
         switch (code) {
             case 0: //Huragany

@@ -11,7 +11,7 @@ import android.util.Log;
 public class LocationDbAdapter {
     private static final String DEBUG_TAG = "SqLiteLocationManager";
 
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 3;
     private static final String DB_NAME = "location.db";
     private static final String DB_LOCATION_TABLE = "locations";
 
@@ -25,7 +25,7 @@ public class LocationDbAdapter {
     public static final String LATITUDE_OPTIONS = "DECIMAL(5,2) NOT NULL";
     public static final int LATITUDE_COLUMN = 2;
     public static final String KEY_CITY = "city";
-    public static final String CITY_OPTIONS = "TEXT NOT NULL";
+    public static final String CITY_OPTIONS = "TEXT NOT NULL UNIQUE";
     public static final int CITY_COLUMN = 3;
 
     private static final String DB_CREATE_LOCATION_TABLE =
@@ -73,7 +73,7 @@ public class LocationDbAdapter {
         this.context = context;
     }
 
-    public LocationDbAdapter open(){
+    public LocationDbAdapter open() {
         dbHelper = new DatabaseHelper(context, DB_NAME, null, DB_VERSION);
         try {
             db = dbHelper.getWritableDatabase();
@@ -95,7 +95,7 @@ public class LocationDbAdapter {
         return db.insert(DB_LOCATION_TABLE, null, newLocationValues);
     }
 
-    public boolean deleteLocation(long id){
+    public boolean deleteLocation(long id) {
         String where = KEY_ID + "=" + id;
         return db.delete(DB_LOCATION_TABLE, where, null) > 0;
     }
@@ -110,7 +110,7 @@ public class LocationDbAdapter {
         String where = KEY_ID + " = " + id;
         Cursor cursor = db.query(DB_LOCATION_TABLE, columns, where, null, null, null, null);
         LocationModel location = null;
-        if(cursor != null && cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             Double longitude = cursor.getDouble(LONGITUDE_COLUMN);
             Double latitude = cursor.getDouble(LATITUDE_COLUMN);
             String city = cursor.getString(CITY_COLUMN);
@@ -124,9 +124,14 @@ public class LocationDbAdapter {
         String where = KEY_CITY + "=" + "\'" + cityName + "\'";
         Cursor cursor = db.query(DB_LOCATION_TABLE, columns, where, null, null, null, null);
         int id = 0;
-        if(cursor != null && cursor.moveToFirst()) {
+        if (cursor != null && cursor.moveToFirst()) {
             id = cursor.getInt(ID_COLUMN);
         }
         return id;
+    }
+
+    public int getSize() {
+        Cursor cursor = getAllLocations();
+        return cursor.getCount();
     }
 }

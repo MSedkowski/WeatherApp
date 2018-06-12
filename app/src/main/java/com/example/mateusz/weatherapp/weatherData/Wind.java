@@ -3,22 +3,16 @@ package com.example.mateusz.weatherapp.weatherData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Units implements JSONPopulator {
+public class Wind implements JSONPopulator {
 
-    private String temperature;
     private String speed;
 
     public String getSpeed() {
         return speed;
     }
 
-    public String getTemperature() {
-        return temperature;
-    }
-
     @Override
     public void populate(JSONObject data) {
-        temperature = data.optString("temperature");
         speed = data.optString("speed");
     }
 
@@ -27,7 +21,6 @@ public class Units implements JSONPopulator {
         JSONObject data = new JSONObject();
 
         try {
-            data.put("temperature", temperature);
             data.put("speed", speed);
         } catch(JSONException e) {
             e.printStackTrace();

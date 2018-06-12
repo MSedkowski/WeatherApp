@@ -1,82 +1,127 @@
 package com.example.mateusz.weatherapp.activities;
 
-import com.example.mateusz.weatherapp.services.YahooWeatherService;
+import com.example.mateusz.weatherapp.services.WeatherServiceCallback;
+import com.example.mateusz.weatherapp.weatherData.Channel;
+import com.example.mateusz.weatherapp.weatherData.Condition;
+import com.example.mateusz.weatherapp.weatherData.Units;
 
-public class WeatherData {
+import java.util.ArrayList;
+import java.util.List;
 
-    private double longitude;
-    private double latitude;
-    private boolean isGPSLocationEnable = true;
-    private int refreshingTime = 15;
-    private String locationString;
-    private String cityName;
-    private boolean tempSignIsC = true;
+public class WeatherData implements WeatherServiceCallback {
 
-    private YahooWeatherService service;
+    private String localization;
+    private String currentDate;
+    private String currentWeather;
+    private String temp;
+    private String pressure;
+    private String humidity;
+    private String wind;
+    private String tempUnits;
+    private String windUnits;
 
-    public YahooWeatherService getService() {
-        return service;
+    public static Units units;
+    public static int code;
+
+    public static List<Condition> weekWeather = new ArrayList<>();
+
+    public String getLocalization() {
+        return localization;
     }
 
-    public void setService(YahooWeatherService service) {
-        this.service = service;
+    public void setLocalization(String localization) {
+        this.localization = localization;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public String getCurrentDate() {
+        return currentDate;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setCurrentDate(String currentDate) {
+        this.currentDate = currentDate;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public String getCurrentWeather() {
+        return currentWeather;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setCurrentWeather(String currentWeather) {
+        this.currentWeather = currentWeather;
     }
 
-    public boolean isGPSLocationEnable() {
-        return isGPSLocationEnable;
+    public String getTemp() {
+        return temp;
     }
 
-    public void setGPSLocationEnable(boolean GPSLocationEnable) {
-        isGPSLocationEnable = GPSLocationEnable;
+    public void setTemp(String temp) {
+        this.temp = temp;
     }
 
-    public int getRefreshingTime() {
-        return refreshingTime;
+    public String getPressure() {
+        return pressure;
     }
 
-    public void setRefreshingTime(int refreshingTime) {
-        this.refreshingTime = refreshingTime;
+    public void setPressure(String pressure) {
+        this.pressure = pressure;
     }
 
-    public String getLocationString() {
-        return locationString;
+    public String getHumidity() {
+        return humidity;
     }
 
-    public void setLocationString(String locationString) {
-        this.locationString = locationString;
+    public void setHumidity(String humidity) {
+        this.humidity = humidity;
     }
 
-    public String getCityName() {
-        return cityName;
+    public String getWind() {
+        return wind;
     }
 
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
+    public void setWind(String wind) {
+        this.wind = wind;
     }
 
-    public boolean isTempSignIsC() {
-        return tempSignIsC;
+    public String getTempUnits() {
+        return tempUnits;
     }
 
-    public void setTempSignIsC(boolean tempSignIsC) {
-        this.tempSignIsC = tempSignIsC;
+    public void setTempUnits(String tempUnits) {
+        this.tempUnits = tempUnits;
+    }
+
+    public String getWindUnits() {
+        return windUnits;
+    }
+
+    public void setWindUnits(String windUnits) {
+        this.windUnits = windUnits;
+    }
+
+    public static List<Condition> getWeekWeather() {
+        return weekWeather;
+    }
+
+    public static void setWeekWeather(List<Condition> weekWeather) {
+        WeatherData.weekWeather = weekWeather;
+    }
+
+    public void updateWeather(String cityName, char tempSign){
+        //TODO
+    }
+
+    public void updateWeather(double longitiude, double latitiude, char tempSign) {
+        //TODO
     }
 
 
+
+    @Override
+    public void serviceSuccess(Channel channel) {
+        //TODO
+    }
+
+    @Override
+    public void serviceFailure(Exception exception) {
+        //TODO
+    }
 }

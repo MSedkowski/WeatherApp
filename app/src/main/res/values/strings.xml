@@ -93,7 +93,11 @@
     <string name="PL_Sat">Sobota</string>
     <string name="PL_Sun">Niedziela</string>
     <string name="refresh">Odśwież</string>
+    <string name="wind">Prędkość wiatru</string>
+    <string name="saved_locations">Zapisane lokalizacje</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

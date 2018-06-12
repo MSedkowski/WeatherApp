@@ -9,53 +9,66 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mateusz.weatherapp.R;
+import com.example.mateusz.weatherapp.adapters.WeatherPagerAdapter;
 import com.example.mateusz.weatherapp.db.LocationDbAdapter;
 import com.example.mateusz.weatherapp.db.LocationModel;
-import com.example.mateusz.weatherapp.fragments.DayWeather;
 import com.example.mateusz.weatherapp.services.WeatherServiceCallback;
 import com.example.mateusz.weatherapp.services.YahooWeatherService;
-import com.example.mateusz.weatherapp.settings.SettingsActivity;
 import com.example.mateusz.weatherapp.settings.WeatherSettings;
 import com.example.mateusz.weatherapp.weatherData.Channel;
 import com.example.mateusz.weatherapp.weatherData.Condition;
 import com.example.mateusz.weatherapp.weatherData.Item;
+import com.example.mateusz.weatherapp.weatherData.Units;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static com.example.mateusz.weatherapp.activities.SunMoonActivity.refreshingTime;
-
 public class WeatherActivity extends AppCompatActivity implements WeatherServiceCallback, LocationListener {
 
-    private ImageView weatherIcon;
-    private TextView localizationValue;
-    private TextView tempValue;
-    private TextView weatherValue;
-    private TextView pressureValue;
-    private TextView humidityValue;
-    private TextView currentDate;
+    public static List<LocationModel> listOfLocations;
     private Button changeDate;
     private ImageButton saveData;
+
+    public static String localization;
+    public static String currentDate;
+    public static String currentWeather;
+    public static String temp;
+    public static String pressure;
+    public static String humidity;
+    public static String wind;
+    public static String tempUnits;
+    public static String windUnits;
+    public static Units units;
+    public static int code;
+
+    public static List<Condition> weekWeather = new ArrayList<>();
 
     private ProgressDialog dialog;
 
@@ -63,20 +76,47 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     protected Context context;
     private SharedPreferences sharedPrefs;
     private LocationDbAdapter locationDbAdapter;
-    private WeatherData weatherData;
+    public static WeatherDataParams weatherDataParams;
+    private ViewPager weatherViewPager;
+    public static String fileName = "weatherDataParams.ser";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_acitivity);
 
-        weatherIcon = findViewById(R.id.weatherIcon);
-        localizationValue = findViewById(R.id.localizationValue);
-        tempValue = findViewById(R.id.tempValue);
-        weatherValue = findViewById(R.id.weatherValue);
-        pressureValue = findViewById(R.id.pressureValue);
-        humidityValue = findViewById(R.id.humidityValue);
-        currentDate = findViewById(R.id.currentDateValue);
+        weatherViewPager = findViewById(R.id.weatherPager);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        weatherViewPager.setAdapter(new WeatherPagerAdapter(fragmentManager));
+        weatherViewPager.setCurrentItem(1);
+        weatherViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position == 1) {
+                    if (weatherDataParams.getCityName() != null && weatherDataParams.isTempSignIsC()) {
+                        weatherDataParams.getService().refreshWeather(weatherDataParams.getCityName(), 1, 'c');
+                    } else if (weatherDataParams.getCityName() != null && !weatherDataParams.isTempSignIsC()) {
+                        weatherDataParams.getService().refreshWeather(weatherDataParams.getCityName(), 1, 'f');
+                    } else if (weatherDataParams.getCityName() == null && weatherDataParams.isTempSignIsC()) {
+                        weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'c');
+                    } else {
+                        weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'f');
+                    }
+                    weatherViewPager.getAdapter().notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
         changeDate = findViewById(R.id.changeLocationButton);
         saveData = findViewById(R.id.saveButton);
 
@@ -93,49 +133,81 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
                 saveCurrentLocation();
             }
         });
-        weatherData = new WeatherData();
+        weatherDataParams = new WeatherDataParams();
         locationDbAdapter = new LocationDbAdapter(getApplicationContext());
         locationDbAdapter.open();
-        weatherData.setService(new YahooWeatherService(this));
 
+        weatherDataParams.setService(new YahooWeatherService(this));
         dialog = new ProgressDialog(this);
         dialog.setMessage("Pobieram dane...");
         dialog.show();
 
-        setLocation();
-        weatherData.getService().refreshWeather(weatherData.getLocationString(), 0, 'c');
+        if(isOnline()) {
+            setLocation();
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'c');
+        } else {
+            weatherDataParams = readFromFile(this);
+            setLocation();
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getCityName(), 1, 'c');
+        }
+
         updatePreferences();
+        setListOfLocations();
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public void setListOfLocations(){
+        listOfLocations = new ArrayList<>();
+        int i = 0, size = locationDbAdapter.getAllLocations().getCount(), id;
+        Cursor cursor = locationDbAdapter.getAllLocations();
+        cursor.moveToFirst();
+        for(;i < size; i++){
+            if(cursor != null) {
+                id = cursor.getInt(0);
+                listOfLocations.add(locationDbAdapter.getLocation(id));
+            }
+            cursor.moveToNext();
+        }
     }
 
     private void checkIfLocationIsSaved() {
-        int id = locationDbAdapter.getLocationID(weatherData.getCityName());
-        if(id == 0){
+        int id = locationDbAdapter.getLocationID(weatherDataParams.getCityName());
+        if (id == 0) {
             saveData.setBackground(getResources().getDrawable(R.drawable.star));
-        }
-        else {
+        } else {
             saveData.setBackground(getResources().getDrawable(R.drawable.star_clicked));
         }
     }
 
     private void saveCurrentLocation() {
-        if(saveData.getBackground().getConstantState() == getResources().getDrawable(R.drawable.star).getConstantState()) {
-            saveLocationIntoDatabase();
-            saveData.setBackgroundResource(R.drawable.star_clicked);
-        }
-        else {
+        if (saveData.getBackground().getConstantState() == getResources().getDrawable(R.drawable.star).getConstantState()) {
+            if (locationDbAdapter.getSize() < 6) {
+                saveLocationIntoDatabase();
+                saveData.setBackgroundResource(R.drawable.star_clicked);
+            } else {
+                Toast.makeText(this, "Osiągnięto maksymalną liczbę zapisanych miast", Toast.LENGTH_SHORT).show();
+            }
+        } else {
             removeLocationFromDatabase();
             saveData.setBackgroundResource(R.drawable.star);
         }
-
+        weatherViewPager.getAdapter().notifyDataSetChanged();
+        setListOfLocations();
     }
 
     private void removeLocationFromDatabase() {
-        int id = locationDbAdapter.getLocationID(weatherData.getCityName());
+        int id = locationDbAdapter.getLocationID(weatherDataParams.getCityName());
         locationDbAdapter.deleteLocation(id);
     }
 
     private void saveLocationIntoDatabase() {
-        locationDbAdapter.insertLocation(weatherData.getLongitude(), weatherData.getLatitude(), weatherData.getCityName());
+        locationDbAdapter.insertLocation(weatherDataParams.getLongitude(), weatherDataParams.getLatitude(), weatherDataParams.getCityName());
     }
 
     private void changePreferences() {
@@ -147,12 +219,12 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     private void updatePreferences() {
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.putBoolean("gps_enabled", weatherData.isGPSLocationEnable());
-        editor.putString("longitude_value", String.valueOf(weatherData.getLongitude()));
-        editor.putString("latitude_value", String.valueOf(weatherData.getLatitude()));
-        editor.putString("refreshing_time", String.valueOf(weatherData.getRefreshingTime()));
-        editor.putBoolean("c_or_f", weatherData.isTempSignIsC());
-        editor.putString("cityName_value", weatherData.getCityName());
+        editor.putBoolean("gps_enabled", weatherDataParams.isGPSLocationEnable());
+        editor.putString("longitude_value", String.valueOf(weatherDataParams.getLongitude()));
+        editor.putString("latitude_value", String.valueOf(weatherDataParams.getLatitude()));
+        editor.putString("refreshing_time", String.valueOf(weatherDataParams.getRefreshingTime()));
+        editor.putBoolean("c_or_f", weatherDataParams.isTempSignIsC());
+        editor.putString("cityName_value", "");
         editor.apply();
     }
 
@@ -171,41 +243,37 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     }
 
     public void updateChanges() {
-        if(!sharedPrefs.getString("cityName_value", " ").equals(" ")){
-            weatherData.setCityName(sharedPrefs.getString("cityName_value", weatherData.getCityName()));
-        }
-        else {
-            weatherData.setGPSLocationEnable(sharedPrefs.getBoolean("gps_enabled", weatherData.isGPSLocationEnable()));
-            if (!weatherData.isGPSLocationEnable()) {
+        if (!sharedPrefs.getString("cityName_value", "").equals("")) {
+            weatherDataParams.setCityName(sharedPrefs.getString("cityName_value", weatherDataParams.getCityName()));
+        } else {
+            weatherDataParams.setGPSLocationEnable(sharedPrefs.getBoolean("gps_enabled", weatherDataParams.isGPSLocationEnable()));
+            if (!weatherDataParams.isGPSLocationEnable()) {
                 String longitudeText, latitudeText;
-                longitudeText = sharedPrefs.getString("longitude_value", String.valueOf(weatherData.getLongitude()));
-                weatherData.setLongitude(Double.parseDouble(longitudeText));
-                latitudeText = sharedPrefs.getString("latitude_value", String.valueOf(weatherData.getLatitude()));
-                weatherData.setLatitude(Double.parseDouble(latitudeText));
+                longitudeText = sharedPrefs.getString("longitude_value", String.valueOf(weatherDataParams.getLongitude()));
+                weatherDataParams.setLongitude(Double.parseDouble(longitudeText));
+                latitudeText = sharedPrefs.getString("latitude_value", String.valueOf(weatherDataParams.getLatitude()));
+                weatherDataParams.setLatitude(Double.parseDouble(latitudeText));
                 StringBuilder builder = new StringBuilder();
-                builder.append(String.format(Locale.US, "%.2f", weatherData.getLatitude()))
+                builder.append(String.format(Locale.US, "%.2f", weatherDataParams.getLatitude()))
                         .append(",")
-                        .append(String.format(Locale.US, "%.2f", weatherData.getLongitude()));
-                weatherData.setLocationString(builder.toString());
+                        .append(String.format(Locale.US, "%.2f", weatherDataParams.getLongitude()));
+                weatherDataParams.setLocationString(builder.toString());
             } else {
                 setLocation();
             }
         }
         String refreshingTimeText;
-        refreshingTimeText = sharedPrefs.getString("refreshing_time", String.valueOf(weatherData.getRefreshingTime()));
-        weatherData.setRefreshingTime(Integer.parseInt(refreshingTimeText));
-        weatherData.setTempSignIsC(sharedPrefs.getBoolean("c_or_f", weatherData.isTempSignIsC()));
-        if(weatherData.getCityName() != null && weatherData.isTempSignIsC()) {
-            weatherData.getService().refreshWeather(weatherData.getCityName(), 1, 'c');
-        }
-        else if(weatherData.getCityName() != null && !weatherData.isTempSignIsC()) {
-            weatherData.getService().refreshWeather(weatherData.getCityName(), 1, 'f');
-        }
-        else if(weatherData.getCityName() == null && weatherData.isTempSignIsC()) {
-            weatherData.getService().refreshWeather(weatherData.getLocationString(), 0, 'c');
-        }
-        else {
-            weatherData.getService().refreshWeather(weatherData.getLocationString(), 0, 'f');
+        refreshingTimeText = sharedPrefs.getString("refreshing_time", String.valueOf(weatherDataParams.getRefreshingTime()));
+        weatherDataParams.setRefreshingTime(Integer.parseInt(refreshingTimeText));
+        weatherDataParams.setTempSignIsC(sharedPrefs.getBoolean("c_or_f", weatherDataParams.isTempSignIsC()));
+        if (weatherDataParams.getCityName() != null && weatherDataParams.isTempSignIsC()) {
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getCityName(), 1, 'c');
+        } else if (weatherDataParams.getCityName() != null && !weatherDataParams.isTempSignIsC()) {
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getCityName(), 1, 'f');
+        } else if (weatherDataParams.getCityName() == null && weatherDataParams.isTempSignIsC()) {
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'c');
+        } else {
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'f');
         }
         updatePreferences();
     }
@@ -219,21 +287,21 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
             int REQUEST_LOCATION = 1;
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         } else {
-            if (weatherData.isGPSLocationEnable()) {
+            if (weatherDataParams.isGPSLocationEnable()) {
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                 if (location != null) {
-                    weatherData.setLongitude(location.getLongitude());
-                    weatherData.setLatitude(location.getLatitude());
+                    weatherDataParams.setLongitude(location.getLongitude());
+                    weatherDataParams.setLatitude(location.getLatitude());
                     StringBuilder builder = new StringBuilder();
-                    builder.append(String.format(Locale.US, "%.2f", weatherData.getLatitude()))
+                    builder.append(String.format(Locale.US, "%.2f", weatherDataParams.getLatitude()))
                             .append(",")
-                            .append(String.format(Locale.US, "%.2f", weatherData.getLongitude()));
-                    weatherData.setLocationString(builder.toString());
+                            .append(String.format(Locale.US, "%.2f", weatherDataParams.getLongitude()));
+                    weatherDataParams.setLocationString(builder.toString());
                 } else {
                     Toast.makeText(this, "Brak możliwości śledzenia Twojej pozycji", Toast.LENGTH_SHORT).show();
                 }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, weatherData.getRefreshingTime(), 500, this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, weatherDataParams.getRefreshingTime(), 500, this);
             }
         }
     }
@@ -242,35 +310,27 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     public void serviceSuccess(Channel channel) {
         Condition[] forecast = channel.getItem().getForecast();
         dialog.hide();
-        checkIfLocationIsSaved();
 
         Item item = channel.getItem();
-        weatherIcon.setImageDrawable(setWeatherIcon(item.getCondition()));
-        localizationValue.setText(channel.getLocation().getCity() + ", " + channel.getLocation().getCountry());
-        tempValue.setText(item.getCondition().getTemperature() + "\u00B0" + channel.getUnits().getTemperature());
-        weatherValue.setText(setDescription(item));
-        pressureValue.setText(String.format("%.0f",channel.getAtmosphere().getPressure()) + " hPa");
-        humidityValue.setText(channel.getAtmosphere().getHumidity() + " %");
+
+        code = item.getCondition().getCode();
+        localization = channel.getLocation().getCity() + ", " + channel.getLocation().getCountry();
+        temp = item.getCondition().getTemperature() + "\u00B0" + channel.getUnits().getTemperature();
+        currentWeather = setDescription(item);
+        pressure = String.format("%.0f", channel.getAtmosphere().getPressure()) + " hPa";
+        humidity = channel.getAtmosphere().getHumidity() + " %";
         Date current = new Date(System.currentTimeMillis());
-        currentDate.setText(DateFormat.getDateInstance(DateFormat.LONG).format(current) + " " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(current));
+        currentDate = DateFormat.getDateInstance(DateFormat.LONG).format(current) + " " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(current);
+        units = channel.getUnits();
+        tempUnits = units.getTemperature();
+        windUnits = units.getSpeed();
+        wind = channel.getWind().getSpeed();
 
-        for (int day = 1; day < forecast.length; day++) {
-            if (day >= 4) {
-                break;
-            }
-
-            Condition currentCondition = forecast[day];
-
-            int viewId = getResources().getIdentifier("forecast_" + day, "id", getPackageName());
-            DayWeather fragment = (DayWeather) getSupportFragmentManager().findFragmentById(viewId);
-
-            if (fragment != null) {
-                fragment.loadForecast(currentCondition, channel.getUnits());
-            }
-        }
-
-        weatherData.setCityName(channel.getLocation().getCity());
-        weatherData.setTempSignIsC(channel.getUnits().getTemperature().equals("C"));
+        weekWeather.addAll(Arrays.asList(forecast));
+        weatherDataParams.setCityName(channel.getLocation().getCity());
+        weatherDataParams.setTempSignIsC(channel.getUnits().getTemperature().equals("C"));
+        checkIfLocationIsSaved();
+        weatherViewPager.getAdapter().notifyDataSetChanged();
     }
 
     private String setDescription(Item item) {
@@ -282,21 +342,21 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     @Override
     public void serviceFailure(Exception exception) {
         dialog.hide();
-        Toast.makeText(this,"Nie udało się pobrać danych pogodowych.", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Nie udało się pobrać danych pogodowych.", Toast.LENGTH_LONG).show();
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onLocationChanged(Location location) {
-        if (weatherData.isGPSLocationEnable()) {
-            weatherData.setLongitude(location.getLongitude());
-            weatherData.setLatitude(location.getLatitude());
+        if (weatherDataParams.isGPSLocationEnable()) {
+            weatherDataParams.setLongitude(location.getLongitude());
+            weatherDataParams.setLatitude(location.getLatitude());
             StringBuilder builder = new StringBuilder();
-            builder.append(String.format(Locale.US, "%.2f", weatherData.getLatitude()))
+            builder.append(String.format(Locale.US, "%.2f", weatherDataParams.getLatitude()))
                     .append(",")
-                    .append(String.format(Locale.US, "%.2f", weatherData.getLongitude()));
-            weatherData.setLocationString(builder.toString());
-            weatherData.getService().refreshWeather(weatherData.getLocationString(), 0, 'c');
+                    .append(String.format(Locale.US, "%.2f", weatherDataParams.getLongitude()));
+            weatherDataParams.setLocationString(builder.toString());
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'c');
         }
     }
 
@@ -316,118 +376,74 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     }
 
     public void refreshAction(View view) {
-        if(weatherData.getCityName() != null && weatherData.isTempSignIsC()){
-            weatherData.getService().refreshWeather(weatherData.getCityName(), 1,'c');
-        }
-        else if(weatherData.getCityName() != null && !weatherData.isTempSignIsC()){
-            weatherData.getService().refreshWeather(weatherData.getCityName(), 1, 'f');
-        }
-        else if(weatherData.getCityName() == null && weatherData.isTempSignIsC()) {
-            weatherData.getService().refreshWeather(weatherData.getLocationString(), 0, 'c');
-        }
-        else {
-            weatherData.getService().refreshWeather(weatherData.getLocationString(), 0, 'f');
+        if (weatherDataParams.getCityName() != null && weatherDataParams.isTempSignIsC()) {
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getCityName(), 1, 'c');
+        } else if (weatherDataParams.getCityName() != null && !weatherDataParams.isTempSignIsC()) {
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getCityName(), 1, 'f');
+        } else if (weatherDataParams.getCityName() == null && weatherDataParams.isTempSignIsC()) {
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'c');
+        } else {
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'f');
         }
         checkIfLocationIsSaved();
         Toast.makeText(this, "Odświeżono dane", Toast.LENGTH_SHORT).show();
     }
 
-    private Drawable setWeatherIcon(Condition item) {
-        int code = item.getCode();
-        int resourceId = getResources().getIdentifier("drawable/icon_14", "drawable", getPackageName());
-        switch (code) {
-            case 0: //Huragany
-            case 2:
-            case 19:
-                resourceId = getResources().getIdentifier("drawable/icon_12", "drawable", getPackageName());
-                break;
-
-            case 1: //Burze
-            case 3:
-            case 4:
-            case 37:
-            case 38:
-            case 39:
-            case 45:
-            case 47:
-                resourceId = getResources().getIdentifier("drawable/icon_3", "drawable", getPackageName());
-                break;
-
-            case 5: //Śnieg
-            case 7:
-            case 13:
-            case 14:
-            case 17:
-            case 18:
-            case 41:
-            case 42:
-            case 43:
-            case 44:
-            case 46:
-                resourceId = getResources().getIdentifier("drawable/icon_9", "drawable", getPackageName());
-                break;
-            case 15:
-            case 16:
-                resourceId = getResources().getIdentifier("drawable/icon_10", "drawable", getPackageName());
-                break;
-
-            case 6: //Deszcz
-            case 8:
-            case 9:
-            case 10:
-            case 40:
-                resourceId = getResources().getIdentifier("drawable/icon_2", "drawable", getPackageName());
-                break;
-
-            case 11:
-            case 12:
-                resourceId = getResources().getIdentifier("drawable/icon_4", "drawable", getPackageName());
-                break;
-
-            case 26: //Chmury
-            case 27:
-            case 28:
-                resourceId = getResources().getIdentifier("drawable/icon_1", "drawable", getPackageName());
-                break;
-            case 29:
-                resourceId = getResources().getIdentifier("drawable/icon_6", "drawable", getPackageName());
-                break;
-            case 30:
-                resourceId = getResources().getIdentifier("drawable/icon_11", "drawable", getPackageName());
-                break;
-
-            case 33: //pogodnie
-            case 34:
-            case 36:
-                resourceId = getResources().getIdentifier("drawable/icon_5", "drawable", getPackageName());
-                break;
-            case 32:
-                resourceId = getResources().getIdentifier("drawable/icon_8", "drawable", getPackageName());
-                break;
-            case 31:
-                resourceId = getResources().getIdentifier("drawable/icon_7", "drawable", getPackageName());
-                break;
-
-            case 21: //mgła
-            case 22:
-            case 23:
-            case 24:
-                resourceId = getResources().getIdentifier("drawable/icon_13", "drawable", getPackageName());
-                break;
-
+    @Override
+    public void onBackPressed() {
+        if(weatherViewPager.getCurrentItem() != 1) {
+            weatherViewPager.setCurrentItem(1, true);
+        } else {
+            saveToFile(this);
+            super.onBackPressed(); // This will pop the Activity from the stack.
         }
-        return getResources().getDrawable(resourceId);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (weatherDataParams.getCityName() != null && weatherDataParams.isTempSignIsC()) {
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getCityName(), 1, 'c');
+        } else if (weatherDataParams.getCityName() != null && !weatherDataParams.isTempSignIsC()) {
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getCityName(), 1, 'f');
+        }
     }
 
     @Override
     protected void onDestroy() {
-        if(locationDbAdapter != null)
+        if (locationDbAdapter != null)
             locationDbAdapter.close();
         super.onDestroy();
+    }
+
+    public void saveToFile(Context context) {
+        try {
+            FileOutputStream fileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(weatherDataParams);
+            objectOutputStream.close();
+            fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // Creates an object by reading it from a file
+    public static WeatherDataParams readFromFile(Context context) {
+        WeatherDataParams weatherDataParams = null;
+        try {
+            FileInputStream fileInputStream = context.openFileInput(fileName);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            weatherDataParams = (WeatherDataParams) objectInputStream.readObject();
+            objectInputStream.close();
+            fileInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return weatherDataParams;
     }
 }
