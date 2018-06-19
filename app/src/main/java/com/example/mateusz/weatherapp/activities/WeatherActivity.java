@@ -56,21 +56,11 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     private Button changeDate;
     private ImageButton saveData;
 
-    public static String localization;
-    public static String currentDate;
-    public static String currentWeather;
-    public static String temp;
-    public static String pressure;
-    public static String humidity;
-    public static String wind;
-    public static String tempUnits;
-    public static String windUnits;
-    public static Units units;
-    public static int code;
-
-    public static List<Condition> weekWeather = new ArrayList<>();
+    public static WeatherData data;
 
     private ProgressDialog dialog;
+    private double longitude;
+    private double latitude;
 
     protected LocationManager locationManager;
     protected Context context;
@@ -78,13 +68,16 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     private LocationDbAdapter locationDbAdapter;
     public static WeatherDataParams weatherDataParams;
     private ViewPager weatherViewPager;
-    public static String fileName = "weatherDataParams.ser";
+    public static String fileName = "weatherDataParams.dat";
+    private int refreshingTime = 30;
+    private String cityName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_acitivity);
 
+        data = new WeatherData(new YahooWeatherService(data));
         weatherViewPager = findViewById(R.id.weatherPager);
         FragmentManager fragmentManager = getSupportFragmentManager();
         weatherViewPager.setAdapter(new WeatherPagerAdapter(fragmentManager));
@@ -133,22 +126,20 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
                 saveCurrentLocation();
             }
         });
-        weatherDataParams = new WeatherDataParams();
         locationDbAdapter = new LocationDbAdapter(getApplicationContext());
         locationDbAdapter.open();
 
-        weatherDataParams.setService(new YahooWeatherService(this));
         dialog = new ProgressDialog(this);
         dialog.setMessage("Pobieram dane...");
         dialog.show();
 
         if(isOnline()) {
             setLocation();
-            weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'c');
+            data.updateWeather(longitude, latitude, 'c');
         } else {
-            weatherDataParams = readFromFile(this);
+            data = readFromFile(this);
             setLocation();
-            weatherDataParams.getService().refreshWeather(weatherDataParams.getCityName(), 1, 'c');
+            data.updateWeather('c');
         }
 
         updatePreferences();
@@ -291,42 +282,19 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                 if (location != null) {
-                    weatherDataParams.setLongitude(location.getLongitude());
-                    weatherDataParams.setLatitude(location.getLatitude());
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(String.format(Locale.US, "%.2f", weatherDataParams.getLatitude()))
-                            .append(",")
-                            .append(String.format(Locale.US, "%.2f", weatherDataParams.getLongitude()));
-                    weatherDataParams.setLocationString(builder.toString());
+                    longitude = location.getLongitude();
+                    latitude = location.getLatitude();
                 } else {
                     Toast.makeText(this, "Brak możliwości śledzenia Twojej pozycji", Toast.LENGTH_SHORT).show();
                 }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, weatherDataParams.getRefreshingTime(), 500, this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, refreshingTime, 500, this);
             }
         }
     }
 
     @Override
     public void serviceSuccess(Channel channel) {
-        Condition[] forecast = channel.getItem().getForecast();
-        dialog.hide();
 
-        Item item = channel.getItem();
-
-        code = item.getCondition().getCode();
-        localization = channel.getLocation().getCity() + ", " + channel.getLocation().getCountry();
-        temp = item.getCondition().getTemperature() + "\u00B0" + channel.getUnits().getTemperature();
-        currentWeather = setDescription(item);
-        pressure = String.format("%.0f", channel.getAtmosphere().getPressure()) + " hPa";
-        humidity = channel.getAtmosphere().getHumidity() + " %";
-        Date current = new Date(System.currentTimeMillis());
-        currentDate = DateFormat.getDateInstance(DateFormat.LONG).format(current) + " " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(current);
-        units = channel.getUnits();
-        tempUnits = units.getTemperature();
-        windUnits = units.getSpeed();
-        wind = channel.getWind().getSpeed();
-
-        weekWeather.addAll(Arrays.asList(forecast));
         weatherDataParams.setCityName(channel.getLocation().getCity());
         weatherDataParams.setTempSignIsC(channel.getUnits().getTemperature().equals("C"));
         checkIfLocationIsSaved();
@@ -420,7 +388,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
         try {
             FileOutputStream fileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            objectOutputStream.writeObject(weatherDataParams);
+            objectOutputStream.writeObject(data);
             objectOutputStream.close();
             fileOutputStream.close();
         } catch (IOException e) {
@@ -430,12 +398,12 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
 
 
     // Creates an object by reading it from a file
-    public static WeatherDataParams readFromFile(Context context) {
-        WeatherDataParams weatherDataParams = null;
+    public static WeatherData readFromFile(Context context) {
+        WeatherData weatherData = null;
         try {
             FileInputStream fileInputStream = context.openFileInput(fileName);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-            weatherDataParams = (WeatherDataParams) objectInputStream.readObject();
+            weatherData = (WeatherData) objectInputStream.readObject();
             objectInputStream.close();
             fileInputStream.close();
         } catch (IOException e) {
@@ -444,6 +412,6 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
         catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return weatherDataParams;
+        return weatherData;
     }
 }
