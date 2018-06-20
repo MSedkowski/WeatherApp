@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.mateusz.weatherapp.R;
 import com.example.mateusz.weatherapp.activities.WeatherActivity;
+import com.example.mateusz.weatherapp.activities.WeatherData;
 import com.example.mateusz.weatherapp.weatherData.Condition;
 
 public class NextDayWeather extends Fragment {
@@ -22,14 +23,10 @@ public class NextDayWeather extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_next_days, container, false);
         localization = rootView.findViewById(R.id.cityNameValue);
         localization.setText(WeatherActivity.localization);
+        update();
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        update();
-    }
 
     public void update() {
         localization.setText(WeatherActivity.localization);
@@ -38,7 +35,7 @@ public class NextDayWeather extends Fragment {
             if(day > 4){
                 break;
             }
-            int viewId = getView().getResources().getIdentifier("forecast_" + day, "id", getActivity().getPackageName());
+            int viewId = getResources().getIdentifier("forecast_" + day, "id", getActivity().getPackageName());
             DayWeather fragment = (DayWeather) getChildFragmentManager().findFragmentById(viewId);
 
             if (fragment != null) {

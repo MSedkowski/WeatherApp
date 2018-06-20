@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.mateusz.weatherapp.R;
 import com.example.mateusz.weatherapp.activities.WeatherActivity;
+import com.example.mateusz.weatherapp.activities.WeatherData;
 import com.example.mateusz.weatherapp.settings.WeatherSettings;
 import com.example.mateusz.weatherapp.weatherData.Condition;
 import com.example.mateusz.weatherapp.weatherData.Units;
@@ -53,14 +54,8 @@ public class TodayWeather extends Fragment {
         pressureValue = rootView.findViewById(R.id.pressureValue);
         humidityValue = rootView.findViewById(R.id.humidityValue);
         windValue = rootView.findViewById(R.id.windValue);
-
-        return rootView;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         update();
+        return rootView;
     }
 
     public void update() {

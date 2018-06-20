@@ -3,7 +3,9 @@ package com.example.mateusz.weatherapp.weatherData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Condition implements JSONPopulator{
+import java.io.Serializable;
+
+public class Condition implements JSONPopulator, Serializable{
 
     private int code;
     private int temperature;

@@ -56,11 +56,24 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     private Button changeDate;
     private ImageButton saveData;
 
-    public static WeatherData data;
+    public static String localization;
+    public static String currentDate;
+    public static String currentWeather;
+    public static String temp;
+    public static String pressure;
+    public static String humidity;
+    public static String wind;
+    public static String tempUnits;
+    public static String windUnits;
+    public static Units units;
+    public static int code;
+
+    private double longitude = 26.0;
+    private double latitude = 19.0;
+
+    public static List<Condition> weekWeather = new ArrayList<>();
 
     private ProgressDialog dialog;
-    private double longitude;
-    private double latitude;
 
     protected LocationManager locationManager;
     protected Context context;
@@ -68,16 +81,15 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     private LocationDbAdapter locationDbAdapter;
     public static WeatherDataParams weatherDataParams;
     private ViewPager weatherViewPager;
-    public static String fileName = "weatherDataParams.dat";
-    private int refreshingTime = 30;
-    private String cityName;
+    public static String fileName = "weatherData.data";
+    private WeatherData data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_acitivity);
 
-        data = new WeatherData(new YahooWeatherService(data));
+        data = new WeatherData();
         weatherViewPager = findViewById(R.id.weatherPager);
         FragmentManager fragmentManager = getSupportFragmentManager();
         weatherViewPager.setAdapter(new WeatherPagerAdapter(fragmentManager));
@@ -126,24 +138,47 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
                 saveCurrentLocation();
             }
         });
+        weatherDataParams = new WeatherDataParams();
         locationDbAdapter = new LocationDbAdapter(getApplicationContext());
         locationDbAdapter.open();
 
+        weatherDataParams.setService(new YahooWeatherService(this));
         dialog = new ProgressDialog(this);
         dialog.setMessage("Pobieram dane...");
         dialog.show();
 
         if(isOnline()) {
-            setLocation();
-            data.updateWeather(longitude, latitude, 'c');
+            weatherDataParams.setLongitude(this.longitude);
+            weatherDataParams.setLatitude(this.latitude);
+            StringBuilder builder = new StringBuilder();
+            builder.append(String.format(Locale.US, "%.2f", weatherDataParams.getLatitude()))
+                    .append(",")
+                    .append(String.format(Locale.US, "%.2f", weatherDataParams.getLongitude()));
+            weatherDataParams.setLocationString(builder.toString());
+            weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'c');
         } else {
             data = readFromFile(this);
-            setLocation();
-            data.updateWeather('c');
+            updateFromFile();
         }
 
         updatePreferences();
         setListOfLocations();
+    }
+
+    private void updateFromFile() {
+        code = data.getCode();
+        localization = data.getLocalization();
+        temp = data.getTemp();
+        currentWeather = setDescription(data.getCode());
+        pressure = data.getPressure();
+        humidity = data.getHumidity();
+        currentDate = data.getCurrentDate();
+        tempUnits = data.getTempUnits();
+        windUnits = data.getWindUnits();
+        wind = data.getWind();
+        weekWeather.addAll(data.getWeekWeather());
+        units = data.getUnits();
+        dialog.hide();
     }
 
     public boolean isOnline() {
@@ -282,28 +317,58 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                 if (location != null) {
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
+                    weatherDataParams.setLongitude(location.getLongitude());
+                    weatherDataParams.setLatitude(location.getLatitude());
+                    StringBuilder builder = new StringBuilder();
+                    builder.append(String.format(Locale.US, "%.2f", weatherDataParams.getLatitude()))
+                            .append(",")
+                            .append(String.format(Locale.US, "%.2f", weatherDataParams.getLongitude()));
+                    weatherDataParams.setLocationString(builder.toString());
                 } else {
                     Toast.makeText(this, "Brak możliwości śledzenia Twojej pozycji", Toast.LENGTH_SHORT).show();
                 }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, refreshingTime, 500, this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, weatherDataParams.getRefreshingTime(), 500, this);
             }
         }
     }
 
     @Override
     public void serviceSuccess(Channel channel) {
+        Condition[] forecast = channel.getItem().getForecast();
+        data.update(channel);
+        dialog.hide();
 
+        Item item = channel.getItem();
+
+        code = item.getCondition().getCode();
+        localization = channel.getLocation().getCity() + ", " + channel.getLocation().getCountry();
+        temp = item.getCondition().getTemperature() + "\u00B0" + channel.getUnits().getTemperature();
+        currentWeather = setDescription(item);
+        pressure = String.format("%.0f", channel.getAtmosphere().getPressure()) + " hPa";
+        humidity = channel.getAtmosphere().getHumidity() + " %";
+        Date current = new Date(System.currentTimeMillis());
+        currentDate = DateFormat.getDateInstance(DateFormat.LONG).format(current) + " " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(current);
+        units = channel.getUnits();
+        tempUnits = units.getTemperature();
+        windUnits = units.getSpeed();
+        wind = channel.getWind().getSpeed();
+
+        weekWeather.addAll(Arrays.asList(forecast));
         weatherDataParams.setCityName(channel.getLocation().getCity());
         weatherDataParams.setTempSignIsC(channel.getUnits().getTemperature().equals("C"));
         checkIfLocationIsSaved();
         weatherViewPager.getAdapter().notifyDataSetChanged();
+        saveToFile(this);
     }
 
     private String setDescription(Item item) {
         int itemCode = item.getCondition().getCode();
         int resID = getResources().getIdentifier("PL_" + itemCode, "string", getPackageName());
+        return getString(resID);
+    }
+
+    private String setDescription(int code) {
+        int resID = getResources().getIdentifier("PL_" + code, "string", getPackageName());
         return getString(resID);
     }
 
