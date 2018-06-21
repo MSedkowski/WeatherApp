@@ -5,13 +5,15 @@
     android:layout_height="match_parent"
     tools:context=".fragments.Location">
 
+    <!-- TODO: Update blank fragment layout -->
+
     <TextView
         android:id="@+id/number"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
-        android:textSize="18sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <Button
@@ -20,6 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="6"
         android:background="@android:color/transparent"
-        android:textSize="18sp" />
+        android:textSize="36sp" />
 
 </LinearLayout>

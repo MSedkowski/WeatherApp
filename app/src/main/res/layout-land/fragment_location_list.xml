@@ -4,49 +4,49 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".fragments.NextDayWeather">
+    tools:context=".fragments.LocationList">
 
     <TextView
-        android:id="@+id/cityNameValue"
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.5"
-        android:gravity="center_vertical|center_horizontal"
-        android:singleLine="true"
-        android:textSize="20sp"
-        android:textStyle="bold|italic"/>
+        android:gravity="center"
+        android:text="@string/saved_locations"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <fragment
-        android:id="@+id/forecast_0"
-        android:name="com.example.mateusz.weatherapp.fragments.DayWeather"
+        android:id="@+id/location_0"
+        android:name="com.example.mateusz.weatherapp.fragments.Location"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
     <fragment
-        android:id="@+id/forecast_1"
-        android:name="com.example.mateusz.weatherapp.fragments.DayWeather"
+        android:id="@+id/location_1"
+        android:name="com.example.mateusz.weatherapp.fragments.Location"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
     <fragment
-        android:id="@+id/forecast_2"
-        android:name="com.example.mateusz.weatherapp.fragments.DayWeather"
+        android:id="@+id/location_2"
+        android:name="com.example.mateusz.weatherapp.fragments.Location"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
     <fragment
-        android:id="@+id/forecast_3"
-        android:name="com.example.mateusz.weatherapp.fragments.DayWeather"
+        android:id="@+id/location_3"
+        android:name="com.example.mateusz.weatherapp.fragments.Location"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
     <fragment
-        android:id="@+id/forecast_4"
-        android:name="com.example.mateusz.weatherapp.fragments.DayWeather"
+        android:id="@+id/location_4"
+        android:name="com.example.mateusz.weatherapp.fragments.Location"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />

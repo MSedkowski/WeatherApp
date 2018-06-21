@@ -41,11 +41,17 @@ public class TodayWeather extends Fragment {
     private TextView pressureValue;
     private TextView humidityValue;
     private TextView windValue;
+    private View rootView;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_today_weather, container, false);
+        rootView = inflater.inflate(R.layout.fragment_today_weather, container, false);
+        setElements(rootView);
+        return rootView;
+    }
+
+    private void setElements(View rootView) {
         localizationValue = rootView.findViewById(R.id.localizationValue);
         currentDateValue = rootView.findViewById(R.id.currentDateValue);
         weatherValue = rootView.findViewById(R.id.weatherValue);
@@ -54,9 +60,9 @@ public class TodayWeather extends Fragment {
         pressureValue = rootView.findViewById(R.id.pressureValue);
         humidityValue = rootView.findViewById(R.id.humidityValue);
         windValue = rootView.findViewById(R.id.windValue);
-        update();
-        return rootView;
     }
+
+
 
     public void update() {
         localizationValue.setText(WeatherActivity.localization);
@@ -67,8 +73,7 @@ public class TodayWeather extends Fragment {
         pressureValue.setText(WeatherActivity.pressure);
         humidityValue.setText(WeatherActivity.humidity);
         windValue.setText(WeatherActivity.wind + " " + WeatherActivity.windUnits);
-        if (getContext() != null)
-            Toast.makeText(getContext(), "Zaktualizowano", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Zaktualizowano", Toast.LENGTH_SHORT).show();
     }
 
     private Drawable setWeatherIcon(int code) {

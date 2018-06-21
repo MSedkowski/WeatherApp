@@ -3,6 +3,7 @@ package com.example.mateusz.weatherapp.adapters;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.view.ViewGroup;
 
 import com.example.mateusz.weatherapp.activities.WeatherActivity;
 import com.example.mateusz.weatherapp.fragments.LocationList;
@@ -10,29 +11,27 @@ import com.example.mateusz.weatherapp.fragments.NextDayWeather;
 import com.example.mateusz.weatherapp.fragments.TodayWeather;
 
 public class WeatherPagerAdapter extends FragmentPagerAdapter {
+
+    private LocationList locationList;
     private TodayWeather todayWeather;
     private NextDayWeather nextDayWeather;
-    private LocationList locationList;
 
     public WeatherPagerAdapter(FragmentManager fm) {
         super(fm);
+        locationList = new LocationList();
         todayWeather = new TodayWeather();
         nextDayWeather = new NextDayWeather();
-        locationList = new LocationList();
     }
 
     @Override
     public Fragment getItem(int position) {
-        if (position == 1) {
-            return todayWeather;
-        }
-        if (position == 2) {
-            return nextDayWeather;
-        }
-        if (position == 0) {
+        if(position == 0) {
             return locationList;
-        }
-        else {
+        } else if(position == 1) {
+            return todayWeather;
+        } else if(position == 2) {
+            return nextDayWeather;
+        } else {
             return null;
         }
     }
@@ -43,10 +42,28 @@ public class WeatherPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        if(position == 0) {
+            locationList = (LocationList) super.instantiateItem(container, position);
+            return locationList;
+        }
+        if(position == 1) {
+            todayWeather = (TodayWeather) super.instantiateItem(container, position);
+            return todayWeather;
+        }
+        if(position == 2) {
+            nextDayWeather = (NextDayWeather) super.instantiateItem(container, position);
+            return nextDayWeather;
+        }
+        return null;
+    }
+
+    @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
+        if(nextDayWeather.isVisible()) {
+        nextDayWeather.update();}
         todayWeather.update();
-        nextDayWeather.update();
         if(locationList.isVisible()){
             locationList.setSavedLocations();
         }

@@ -1,5 +1,8 @@
 package com.example.mateusz.weatherapp.weatherData;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,4 +68,5 @@ public class Condition implements JSONPopulator, Serializable{
 
         return data;
     }
+
 }

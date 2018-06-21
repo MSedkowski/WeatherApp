@@ -14,7 +14,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -49,8 +51,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
-public class WeatherActivity extends AppCompatActivity implements WeatherServiceCallback, LocationListener {
+public class WeatherActivity extends AppCompatActivity implements WeatherServiceCallback {
 
     public static List<LocationModel> listOfLocations;
     private Button changeDate;
@@ -75,8 +78,6 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
 
     private ProgressDialog dialog;
 
-    protected LocationManager locationManager;
-    protected Context context;
     private SharedPreferences sharedPrefs;
     private LocationDbAdapter locationDbAdapter;
     public static WeatherDataParams weatherDataParams;
@@ -124,6 +125,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
 
         changeDate = findViewById(R.id.changeLocationButton);
         saveData = findViewById(R.id.saveButton);
+        saveData.setBackground(getResources().getDrawable(R.drawable.star));
 
         changeDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,6 +162,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
             data = readFromFile(this);
             updateFromFile();
         }
+
 
         updatePreferences();
         setListOfLocations();
@@ -284,8 +287,6 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
                         .append(",")
                         .append(String.format(Locale.US, "%.2f", weatherDataParams.getLongitude()));
                 weatherDataParams.setLocationString(builder.toString());
-            } else {
-                setLocation();
             }
         }
         String refreshingTimeText;
@@ -304,34 +305,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
         updatePreferences();
     }
 
-    private void setLocation() {
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            int REQUEST_LOCATION = 1;
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-        } else {
-            if (weatherDataParams.isGPSLocationEnable()) {
-                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                if (location != null) {
-                    weatherDataParams.setLongitude(location.getLongitude());
-                    weatherDataParams.setLatitude(location.getLatitude());
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(String.format(Locale.US, "%.2f", weatherDataParams.getLatitude()))
-                            .append(",")
-                            .append(String.format(Locale.US, "%.2f", weatherDataParams.getLongitude()));
-                    weatherDataParams.setLocationString(builder.toString());
-                } else {
-                    Toast.makeText(this, "Brak możliwości śledzenia Twojej pozycji", Toast.LENGTH_SHORT).show();
-                }
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, weatherDataParams.getRefreshingTime(), 500, this);
-            }
-        }
-    }
-
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void serviceSuccess(Channel channel) {
         Condition[] forecast = channel.getItem().getForecast();
@@ -357,8 +331,11 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
         weatherDataParams.setCityName(channel.getLocation().getCity());
         weatherDataParams.setTempSignIsC(channel.getUnits().getTemperature().equals("C"));
         checkIfLocationIsSaved();
-        weatherViewPager.getAdapter().notifyDataSetChanged();
-        saveToFile(this);
+        if(localization != null) {
+            weatherViewPager.getAdapter().notifyDataSetChanged();
+            saveToFile(this);
+        }
+
     }
 
     private String setDescription(Item item) {
@@ -376,36 +353,6 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     public void serviceFailure(Exception exception) {
         dialog.hide();
         Toast.makeText(this, "Nie udało się pobrać danych pogodowych.", Toast.LENGTH_LONG).show();
-    }
-
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void onLocationChanged(Location location) {
-        if (weatherDataParams.isGPSLocationEnable()) {
-            weatherDataParams.setLongitude(location.getLongitude());
-            weatherDataParams.setLatitude(location.getLatitude());
-            StringBuilder builder = new StringBuilder();
-            builder.append(String.format(Locale.US, "%.2f", weatherDataParams.getLatitude()))
-                    .append(",")
-                    .append(String.format(Locale.US, "%.2f", weatherDataParams.getLongitude()));
-            weatherDataParams.setLocationString(builder.toString());
-            weatherDataParams.getService().refreshWeather(weatherDataParams.getLocationString(), 0, 'c');
-        }
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Log.d("Latitude", "disable");
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        Log.d("Latitude", "enable");
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        Log.d("Latitude", "status");
     }
 
     public void refreshAction(View view) {
@@ -478,5 +425,53 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
             e.printStackTrace();
         }
         return weatherData;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("localization", localization);
+        savedInstanceState.putString("currentDate", currentDate);
+        savedInstanceState.putString("currentWeather", currentWeather);
+        savedInstanceState.putString("temp", temp);
+        savedInstanceState.putString("pressure", pressure);
+        savedInstanceState.putString("humidity", humidity);
+        savedInstanceState.putString("wind", wind);
+        savedInstanceState.putString("tempUnits", tempUnits);
+        savedInstanceState.putString("windUnits", windUnits);
+        savedInstanceState.putSerializable("units", units);
+        savedInstanceState.putInt("code", code);
+        savedInstanceState.putDouble("longitude", longitude);
+        savedInstanceState.putDouble("latitude", latitude);
+        for(int i = 0; i < 6; i++) {
+            savedInstanceState.putSerializable("weekWeather" + i, weekWeather.get(i));
+        }
+        savedInstanceState.putString("filename", fileName);
+        savedInstanceState.putSerializable("data", data);
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        localization = savedInstanceState.getString("localization");
+        currentDate = savedInstanceState.getString("currentDate");
+        currentWeather = savedInstanceState.getString("currentWeather");
+        temp = savedInstanceState.getString("temp");
+        pressure = savedInstanceState.getString("pressure");
+        humidity = savedInstanceState.getString("humidity");
+        wind = savedInstanceState.getString("wind");
+        tempUnits = savedInstanceState.getString("tempUnits");
+        windUnits = savedInstanceState.getString("windUnits");
+        units = (Units) savedInstanceState.getSerializable("units");
+        code = savedInstanceState.getInt("code");
+        longitude = savedInstanceState.getDouble("longitude");
+        latitude = savedInstanceState.getDouble("latitude");
+        weekWeather.clear();
+        for(int i = 0; i < 6; i++) {
+            weekWeather.add((Condition) savedInstanceState.getSerializable("weekWeather" + i));
+        }
+        fileName = savedInstanceState.getString("filename");
+        data = (WeatherData) savedInstanceState.getSerializable("data");
     }
 }

@@ -27,7 +27,7 @@ public class LocationList extends Fragment {
             @Override
             public void run() {
                 setSavedLocations();
-                handler.postDelayed(this, 100);
+                handler.postDelayed(this, 1000);
             }
         };
 
@@ -36,15 +36,9 @@ public class LocationList extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        setSavedLocations();
-    }
-
-    @Override
     public void onDetach() {
-        super.onDetach();
         handler.removeCallbacks(runnable);
+        super.onDetach();
     }
 
     public void setSavedLocations() {

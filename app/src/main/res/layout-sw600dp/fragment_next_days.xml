@@ -6,6 +6,8 @@
     android:orientation="vertical"
     tools:context=".fragments.NextDayWeather">
 
+    <!-- TODO: Update blank fragment layout -->
+
     <TextView
         android:id="@+id/cityNameValue"
         android:layout_width="match_parent"
@@ -13,8 +15,8 @@
         android:layout_weight="0.5"
         android:gravity="center_vertical|center_horizontal"
         android:singleLine="true"
-        android:textSize="20sp"
-        android:textStyle="bold|italic"/>
+        android:textSize="30sp"
+        android:textStyle="bold|italic" />
 
     <fragment
         android:id="@+id/forecast_0"
