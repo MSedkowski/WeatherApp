@@ -4,22 +4,23 @@
     <SwitchPreference
         android:defaultValue="true"
         android:key="gps_enabled"
-        android:summary="Wyłącz jeśli chcesz pozorować swoją lokalizację dla aplikacji"
-        android:title="Odczyt GPS z urządzenia" />
+        android:summary="Wyłącz jeśli chcesz wprowadzić nazwę miasta"
+        android:title="Lokalizacja włączona" />
     <EditTextPreference
         android:defaultValue="Default value"
         android:inputType="numberDecimal"
         android:key="longitude_value"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="Pozorowana długość geograficzna: " />
+        android:title="Długość geograficzna: " />
     <EditTextPreference
         android:defaultValue="Default value"
         android:inputType="numberDecimal"
         android:key="latitude_value"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="Pozorowana szerokość geograficzna" />
+        android:textSize="18sp"
+        android:title="Szerokość geograficzna" />
     <ListPreference
         android:defaultValue="1"
         android:entries="@array/list_update_intervals"
@@ -34,13 +35,14 @@
         android:summaryOn="Celsius"
         android:textOff="Farenheit"
         android:textOn="Celsius"
+        android:textSize="18sp"
         android:title="Jednostki" />
     <EditTextPreference
-        android:defaultValue=" "
         android:inputType="text"
         android:key="cityName_value"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:summary="Podaj nazwę miasta."
+        android:textSize="18sp"
         android:title="Miasto" />
 </PreferenceScreen>

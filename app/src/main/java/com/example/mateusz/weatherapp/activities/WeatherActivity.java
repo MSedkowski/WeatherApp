@@ -253,7 +253,7 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
         editor.putString("latitude_value", String.valueOf(weatherDataParams.getLatitude()));
         editor.putString("refreshing_time", String.valueOf(weatherDataParams.getRefreshingTime()));
         editor.putBoolean("c_or_f", weatherDataParams.isTempSignIsC());
-        editor.putString("cityName_value", "");
+        editor.putString("cityName_value", null);
         editor.apply();
     }
 
@@ -272,11 +272,8 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
     }
 
     public void updateChanges() {
-        if (!sharedPrefs.getString("cityName_value", "").equals("")) {
-            weatherDataParams.setCityName(sharedPrefs.getString("cityName_value", weatherDataParams.getCityName()));
-        } else {
+            weatherDataParams.setCityName(sharedPrefs.getString("cityName_value", null));
             weatherDataParams.setGPSLocationEnable(sharedPrefs.getBoolean("gps_enabled", weatherDataParams.isGPSLocationEnable()));
-            if (!weatherDataParams.isGPSLocationEnable()) {
                 String longitudeText, latitudeText;
                 longitudeText = sharedPrefs.getString("longitude_value", String.valueOf(weatherDataParams.getLongitude()));
                 weatherDataParams.setLongitude(Double.parseDouble(longitudeText));
@@ -287,8 +284,6 @@ public class WeatherActivity extends AppCompatActivity implements WeatherService
                         .append(",")
                         .append(String.format(Locale.US, "%.2f", weatherDataParams.getLongitude()));
                 weatherDataParams.setLocationString(builder.toString());
-            }
-        }
         String refreshingTimeText;
         refreshingTimeText = sharedPrefs.getString("refreshing_time", String.valueOf(weatherDataParams.getRefreshingTime()));
         weatherDataParams.setRefreshingTime(Integer.parseInt(refreshingTimeText));

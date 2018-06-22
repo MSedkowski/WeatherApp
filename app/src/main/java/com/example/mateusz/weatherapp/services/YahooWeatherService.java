@@ -48,7 +48,7 @@ public class YahooWeatherService {
                     endpoint = String.format("https://query.yahooapis.com/v1/public/yql?q=%s&format=json", Uri.encode(YQL));
                 }
                 else if(mode == 0 && tempSign == 'f') {
-                    YQL = String.format("select * from weather.forecast where woeid in (select woeid from geo.places where text=\"(%s)\") and u='f'", strings[0]);
+                    YQL = String.format("select * from weather.forecast where woeid in (select woeid from geo.places where text=\"(%s)\")", strings[0]);
                     endpoint = String.format("https://query.yahooapis.com/v1/public/yql?q=%s&format=json", Uri.encode(YQL));
                 }
                 else if(mode != 0 && tempSign == 'c') {

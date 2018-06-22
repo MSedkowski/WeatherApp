@@ -47,21 +47,21 @@ public class WeatherSettings extends PreferenceActivity{
             EditTextPreference latitude = (EditTextPreference) getPreferenceScreen().findPreference("latitude_value");
             isGPSEnabled = (SwitchPreference) getPreferenceScreen().findPreference("gps_enabled");
             tempUnits = (SwitchPreference) getPreferenceScreen().findPreference("c_or_f");
-            EditTextPreference cityName = (EditTextPreference) getPreferenceScreen().findPreference("cityName_value");
+            final EditTextPreference cityName = (EditTextPreference) getPreferenceScreen().findPreference("cityName_value");
 
             longitude.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
 
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     Boolean rtnval = true;
-                    if (isGPSEnabled.isChecked()) {
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Błąd");
-                        builder.setMessage("Najpierw wyłącz odczyt GPS z urządzenia.");
-                        builder.setPositiveButton(android.R.string.ok, null);
-                        builder.show();
-                        rtnval = false;
-                    } else {
+//                    if (isGPSEnabled.isChecked()) {
+//                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                        builder.setTitle("Błąd");
+//                        builder.setMessage("Najpierw wyłącz odczyt GPS z urządzenia.");
+//                        builder.setPositiveButton(android.R.string.ok, null);
+//                        builder.show();
+//                        rtnval = false;
+//                    } else {
 
                         if (isValidLongitude(newValue.toString())) {
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -72,7 +72,7 @@ public class WeatherSettings extends PreferenceActivity{
                             rtnval = false;
                         }
 
-                    }
+                    //}
                     return rtnval;
                 }
             });
@@ -82,14 +82,14 @@ public class WeatherSettings extends PreferenceActivity{
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     Boolean rtnval = true;
-                    if (isGPSEnabled.isChecked()) {
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Błąd");
-                        builder.setMessage("Najpierw wyłącz odczyt GPS z urządzenia.");
-                        builder.setPositiveButton(android.R.string.ok, null);
-                        builder.show();
-                        rtnval = false;
-                    } else {
+//                    if (isGPSEnabled.isChecked()) {
+//                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                        builder.setTitle("Błąd");
+//                        builder.setMessage("Najpierw wyłącz odczyt GPS z urządzenia.");
+//                        builder.setPositiveButton(android.R.string.ok, null);
+//                        builder.show();
+//                        rtnval = false;
+//                    } else {
                         if (isValidLatitude(newValue.toString())) {
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Błąd");
@@ -98,7 +98,7 @@ public class WeatherSettings extends PreferenceActivity{
                             builder.show();
                             rtnval = false;
                         }
-                    }
+//                    }
                     return rtnval;
                 }
             });
@@ -107,13 +107,23 @@ public class WeatherSettings extends PreferenceActivity{
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     Boolean rtnval = true;
-                    if (newValue.toString().equals("") || newValue.toString().equals(" ")) {
+                    if (isGPSEnabled.isChecked()) {
                         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("Błąd");
-                        builder.setMessage("Wprowadź nazwę poszukiwanego miasta");
+                        builder.setMessage("Najpierw wyłącz lokalizację.");
                         builder.setPositiveButton(android.R.string.ok, null);
                         builder.show();
+                        cityName.setText(null);
                         rtnval = false;
+                    } else {
+                        if (newValue.toString().equals("") || newValue.toString().equals(" ")) {
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle("Błąd");
+                            builder.setMessage("Wprowadź nazwę poszukiwanego miasta");
+                            builder.setPositiveButton(android.R.string.ok, null);
+                            builder.show();
+                            rtnval = false;
+                        }
                     }
                     return rtnval;
                 }
